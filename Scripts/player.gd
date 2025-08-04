@@ -70,6 +70,6 @@ func _physics_process(delta: float) -> void:
 	velocity.z = currentMovementVector.z * MAX_SPEED
 
 	if not mouse_locked and direction.length() > 0:
-		hitbox.rotation.y = lerp_angle(hitbox.rotation.y, atan2(-direction.x, -direction.z), 15 * delta)
+		hitbox.rotation.y = lerp_angle(hitbox.rotation.y, atan2(-direction.x, -direction.z), 10 * delta)
 
 	move_and_slide()

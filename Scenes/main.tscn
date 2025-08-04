@@ -20,6 +20,7 @@ glow_enabled = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bo1nx"]
 albedo_texture = ExtResource("1_jjgbg")
+uv1_offset = Vector3(0, 0.5, 0)
 uv1_triplanar = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jjvhh"]
@@ -72,6 +73,7 @@ size = Vector3(5, 1, 5)
 material = SubResource("StandardMaterial3D_jjvhh")
 
 [node name="Player" type="CharacterBody3D" parent="."]
+floor_snap_length = 1.0
 script = ExtResource("2_bo1nx")
 
 [node name="Hitbox" type="CollisionShape3D" parent="Player"]
@@ -79,13 +81,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
 shape = SubResource("BoxShape3D_8gbba")
 
 [node name="Avatar" type="CSGBox3D" parent="Player/Hitbox"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
-size = Vector3(2, 4, 1)
-
-[node name="CSGCylinder3D" type="CSGCylinder3D" parent="Player/Hitbox"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
-height = 1.0
-sides = 16
+size = Vector3(2, 5, 1)
 
 [node name="PlayerCameraPivot" type="Node3D" parent="Player"]
 top_level = true
