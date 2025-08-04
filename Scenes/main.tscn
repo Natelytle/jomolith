@@ -1,0 +1,86 @@
+[gd_scene load_steps=11 format=3 uid="uid://h4pwgavpjngs"]
+
+[ext_resource type="Texture2D" uid="uid://btoef73roaw3p" path="res://Assets/stud.png" id="1_jjgbg"]
+[ext_resource type="Script" uid="uid://dth1luwuqr57k" path="res://Scripts/player.gd" id="2_bo1nx"]
+[ext_resource type="Script" uid="uid://dwawk6mdin4bn" path="res://Scripts/player_camera.gd" id="3_8gbba"]
+[ext_resource type="Script" uid="uid://m2c5vvndfyir" path="res://Scenes/camera_follow.gd" id="4_jjvhh"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_7dm0k"]
+sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+
+[sub_resource type="Sky" id="Sky_ig7tw"]
+sky_material = SubResource("ProceduralSkyMaterial_7dm0k")
+
+[sub_resource type="Environment" id="Environment_0xm2m"]
+background_mode = 2
+sky = SubResource("Sky_ig7tw")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bo1nx"]
+albedo_texture = ExtResource("1_jjgbg")
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jjvhh"]
+albedo_texture = ExtResource("1_jjgbg")
+uv1_offset = Vector3(0.5, 0.5, 0)
+uv1_triplanar = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8gbba"]
+size = Vector3(2, 5, 1)
+
+[node name="Main" type="Node3D"]
+
+[node name="Env" type="Node3D" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Env"]
+environment = SubResource("Environment_0xm2m")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Env"]
+transform = Transform3D(0.605697, -0.689093, 0.397848, 2.78059e-08, 0.5, 0.866025, -0.795695, -0.524549, 0.302848, 0, 17.687, 0)
+shadow_enabled = true
+
+[node name="Stage" type="Node3D" parent="."]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+use_collision = true
+size = Vector3(50, 1, 50)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.5, -3)
+use_collision = true
+size = Vector3(1, 5, 16)
+material = SubResource("StandardMaterial3D_jjvhh")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Stage/CSGBox3D2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, 0)
+size = Vector3(1, 9, 8)
+material = SubResource("StandardMaterial3D_jjvhh")
+
+[node name="Player" type="CharacterBody3D" parent="."]
+script = ExtResource("2_bo1nx")
+
+[node name="Hitbox" type="CollisionShape3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+shape = SubResource("BoxShape3D_8gbba")
+
+[node name="Avatar" type="CSGBox3D" parent="Player/Hitbox"]
+size = Vector3(2, 5, 1)
+
+[node name="PlayerCameraPivot" type="Node3D" parent="Player"]
+top_level = true
+script = ExtResource("3_8gbba")
+
+[node name="PlayerCamera" type="SpringArm3D" parent="Player/PlayerCameraPivot"]
+spring_length = 10.0
+
+[node name="SpringPosition" type="Node3D" parent="Player/PlayerCameraPivot/PlayerCamera"]
+
+[node name="Camera3D" type="Camera3D" parent="Player/PlayerCameraPivot" node_paths=PackedStringArray("spring_arm")]
+fov = 70.0
+script = ExtResource("4_jjvhh")
+spring_arm = NodePath("../PlayerCamera/SpringPosition")
+lerp_power = 20.0
