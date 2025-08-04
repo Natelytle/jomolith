@@ -3,12 +3,15 @@ extends CharacterBody3D
 @onready var hitbox: CollisionShape3D = $Hitbox
 
 # movement
-const MAX_SPEED = 125.0
+const MAX_SPEED = 16
 const GROUND_ACCELERATION = 50
 const AIR_ACCELERATION = 15
 const JUMP_VELOCITY = 50
+const COYOTE_TIME = 0.2
+
 var currentSpeed = 0
 var currentMovementVector = Vector3.ZERO
+var timeSinceLastOnFloor = 0
 
 # mouse
 var mouse_locked = false
@@ -34,20 +37,24 @@ func _input(event: InputEvent) -> void:
 	else:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
-
 func _process(_delta: float) -> void:
+	# Handle turning with and without shift-lock
 	if mouse_locked:
 		hitbox.rotation.y = camera.rotation.y
 
+
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
+		timeSinceLastOnFloor += delta
 		velocity += get_gravity() * delta
+	else:
+		timeSinceLastOnFloor = 0
 
-	if Input.is_action_pressed("jump") and is_on_floor():
+	if Input.is_action_pressed("jump") and timeSinceLastOnFloor <= COYOTE_TIME:
 		velocity.y = JUMP_VELOCITY
+		timeSinceLastOnFloor += COYOTE_TIME
 
 	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
 	var input_dir := Input.get_vector("left", "right", "forward", "backward")
 	
 	var direction = (transform.basis.rotated(Vector3.UP, camera.rotation.y) * Vector3(input_dir.x, 0, input_dir.y)).normalized()
@@ -61,5 +68,8 @@ func _physics_process(delta: float) -> void:
 
 	velocity.x = currentMovementVector.x * MAX_SPEED
 	velocity.z = currentMovementVector.z * MAX_SPEED
+
+	if not mouse_locked and direction.length() > 0:
+		hitbox.rotation.y = lerp_angle(hitbox.rotation.y, atan2(-direction.x, -direction.z), 15 * delta)
 
 	move_and_slide()
