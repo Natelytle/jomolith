@@ -6,11 +6,10 @@ var first_person = false
 
 @onready var playerCamera := $PlayerCamera
 
-func move(event: InputEvent, mouse_sensitivity: float) -> void:
-	if event is InputEventMouseMotion:
-		rotation.y -= deg_to_rad(event.relative.x * mouse_sensitivity)
-		rotation.x -= deg_to_rad(event.relative.y * mouse_sensitivity)
-		rotation.x = clamp(rotation.x, deg_to_rad(-80), deg_to_rad(80))
+func move(event: InputEventMouseMotion, mouse_sensitivity: float) -> void:
+	rotation.y -= deg_to_rad(event.relative.x * mouse_sensitivity)
+	rotation.x -= deg_to_rad(event.relative.y * mouse_sensitivity)
+	rotation.x = clamp(rotation.x, deg_to_rad(-80), deg_to_rad(80))
 	
 func zoom_in() -> void:
 	if (playerCamera.spring_length > MIN_ZOOM):
