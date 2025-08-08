@@ -1,17 +1,18 @@
 extends CharacterBody3D
 @onready var camera: Node3D = $"PlayerCameraPivot"
-@onready var hitbox: CollisionShape3D = $Hitbox
+@onready var hitbox: CollisionShape3D = $"HitboxTorso"
+@onready var hitboxLegs: Node3D = hitbox.get_node("HitboxLegs")
 
 # movement
 const MAX_SPEED = 16
 const GROUND_ACCELERATION = 80
 const AIR_ACCELERATION = 15
 const JUMP_VELOCITY = 50
-const COYOTE_TIME = 0.2
+const COYOTE_TIME = 0.08
 
 var currentSpeed = 0
 var currentMovementVector = Vector3.ZERO
-var timeSinceLastOnFloor = 0
+var coyoteTimeTimer = 0
 
 # mouse
 var mouse_locked = false
@@ -50,15 +51,20 @@ func _process(_delta: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if not is_on_floor():
-		timeSinceLastOnFloor += delta
-		velocity += get_gravity() * delta
-	else:
-		timeSinceLastOnFloor = 0
+	var averageLength = hitboxLegs.get_average_length()
 
-	if Input.is_action_pressed("jump") and timeSinceLastOnFloor <= COYOTE_TIME:
+	var isOnFloor = averageLength < 2.1
+
+	if not isOnFloor:
+		velocity += get_gravity() * delta
+		coyoteTimeTimer += delta
+	else:
+		velocity.y = -get_gravity().y * (2 - averageLength) / 10
+		coyoteTimeTimer = 0
+
+	if Input.is_action_pressed("jump") and coyoteTimeTimer <= COYOTE_TIME:
 		velocity.y = JUMP_VELOCITY
-		timeSinceLastOnFloor += COYOTE_TIME
+		coyoteTimeTimer += COYOTE_TIME
 
 	# Get the input direction and handle the movement/deceleration.
 	var input_dir := Input.get_vector("left", "right", "forward", "backward")
@@ -66,7 +72,7 @@ func _physics_process(delta: float) -> void:
 	var direction = (transform.basis.rotated(Vector3.UP, camera.rotation.y) * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	var targetMovementVector = direction * MAX_SPEED
 
-	if is_on_floor():
+	if isOnFloor:
 		currentMovementVector = accelerate(currentMovementVector, targetMovementVector, GROUND_ACCELERATION, delta)
 	else:
 		currentMovementVector = accelerate(currentMovementVector, targetMovementVector, AIR_ACCELERATION, delta)
