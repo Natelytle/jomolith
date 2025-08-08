@@ -4,7 +4,7 @@ extends CharacterBody3D
 
 # movement
 const MAX_SPEED = 16
-const GROUND_ACCELERATION = 50
+const GROUND_ACCELERATION = 80
 const AIR_ACCELERATION = 15
 const JUMP_VELOCITY = 50
 const COYOTE_TIME = 0.2
@@ -31,11 +31,17 @@ func _input(event: InputEvent) -> void:
 		shift_lock = !shift_lock
 		mouse_locked = shift_lock || camera.first_person
 
-	if mouse_locked or Input.is_action_pressed("right_click"):
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-		camera.move(event, mouse_sensitivity)
-	else:
-		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if event is InputEventMouseMotion:
+		var mouseEvent = event as InputEventMouseMotion
+
+		if Input.is_action_pressed("right_click"):
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			camera.move(mouseEvent, mouse_sensitivity)
+		elif mouse_locked:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			camera.move(mouseEvent, mouse_sensitivity)
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 func _process(_delta: float) -> void:
 	# Handle turning with and without shift-lock
@@ -58,18 +64,31 @@ func _physics_process(delta: float) -> void:
 	var input_dir := Input.get_vector("left", "right", "forward", "backward")
 	
 	var direction = (transform.basis.rotated(Vector3.UP, camera.rotation.y) * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	var targetMovementVector = direction * MAX_SPEED
 
 	if is_on_floor():
-		var blend = 1 - pow(0.5, GROUND_ACCELERATION * delta)
-		currentMovementVector = lerp(currentMovementVector, direction, blend)
+		currentMovementVector = accelerate(currentMovementVector, targetMovementVector, GROUND_ACCELERATION, delta)
 	else:
-		var blend = 1 - pow(0.5, AIR_ACCELERATION * delta)
-		currentMovementVector = lerp(currentMovementVector, direction, blend)
+		currentMovementVector = accelerate(currentMovementVector, targetMovementVector, AIR_ACCELERATION, delta)
 
-	velocity.x = currentMovementVector.x * MAX_SPEED
-	velocity.z = currentMovementVector.z * MAX_SPEED
+	velocity.x = currentMovementVector.x
+	velocity.z = currentMovementVector.z
 
 	if not mouse_locked and direction.length() > 0:
 		hitbox.rotation.y = lerp_angle(hitbox.rotation.y, atan2(-direction.x, -direction.z), 10 * delta)
 
 	move_and_slide()
+
+
+func accelerate(current: Vector3, target: Vector3, accel: float, delta: float) -> Vector3:
+	var factor = 1.0 - pow(0.2, 80.0 * delta)
+	var scaledAccel = accel * (10.0 * delta)
+
+	var lerp_z = lerp(current, target, factor)
+	var accel_z = current + (target - current).normalized() * scaledAccel
+
+	# Whichever one accelerates the player less is the chosen one
+	if ((lerp_z - current).length() > (accel_z - current).length()):
+		return accel_z
+	else:
+		return lerp_z
