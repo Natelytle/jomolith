@@ -9,12 +9,13 @@ extends RigidBody3D
 const MAX_SPEED = 16
 const GROUND_ACCELERATION = 800
 const AIR_ACCELERATION = 150
-const JUMP_VELOCITY = 50
+const JUMP_VELOCITY = 55
 const COYOTE_TIME = 0.08
 const PICKLE_TIME = "All The Damn Time"
 
 var currentSpeed = 0
 var coyoteTimeTimer = 0
+var isOnFloor = false
 
 # camera
 const SHIFTLOCK_OFFSET = 1.75
@@ -57,7 +58,7 @@ func _input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	var averageLength = hitboxLegs.get_average_length()
 
-	var isOnFloor = averageLength < 2.1
+	isOnFloor = averageLength < 2.1 && (linear_velocity.y < 0.5 or isOnFloor)
 
 	if not isOnFloor:
 		coyoteTimeTimer += delta
