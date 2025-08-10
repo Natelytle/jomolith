@@ -3,6 +3,7 @@ extends RigidBody3D
 @onready var baseNode: Node3D = $".."
 @onready var camera: Node3D = $"../PlayerCameraPivot"
 @onready var hitboxLegs: Node3D = $"PlayerLegs"
+@onready var cameraAnchor: Node3D = $"CameraAnchor"
 
 # movement
 const MAX_SPEED = 16
@@ -15,7 +16,9 @@ const PICKLE_TIME = "All The Damn Time"
 var currentSpeed = 0
 var coyoteTimeTimer = 0
 
-# mouse
+# camera
+const SHIFTLOCK_OFFSET = 1.75
+
 var mouse_locked = false
 var shift_lock = false
 @export var mouse_sensitivity: float = 0.4
@@ -32,6 +35,11 @@ func _input(event: InputEvent) -> void:
 	if event.is_action("shift_lock") and event.is_pressed():
 		shift_lock = !shift_lock
 		mouse_locked = shift_lock || camera.first_person
+
+		if shift_lock:
+			camera.set_horizontal_offset(SHIFTLOCK_OFFSET)
+		else:
+			camera.set_horizontal_offset(0)
 
 	if event is InputEventMouseMotion:
 		var mouseEvent = event as InputEventMouseMotion
