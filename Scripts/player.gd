@@ -58,7 +58,7 @@ func _input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	var averageLength = hitboxLegs.get_average_length()
 
-	isOnFloor = averageLength < 2.1 && (linear_velocity.y < 0.5 or isOnFloor)
+	isOnFloor = averageLength < 2.0 && (linear_velocity.y < 0.5 or isOnFloor)
 
 	if not isOnFloor:
 		coyoteTimeTimer += delta
