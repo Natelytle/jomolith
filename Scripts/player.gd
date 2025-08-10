@@ -15,6 +15,7 @@ const PICKLE_TIME = "All The Damn Time"
 
 var currentSpeed = 0
 var coyoteTimeTimer = 0
+var isOnFloor = false
 
 # camera
 const SHIFTLOCK_OFFSET = 1.75
@@ -57,13 +58,13 @@ func _input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	var averageLength = hitboxLegs.get_average_length()
 
-	var isOnFloor = averageLength < 2
+	isOnFloor = averageLength < 2 and (linear_velocity.y < 5 or isOnFloor)
 
 	if not isOnFloor:
 		coyoteTimeTimer += delta
 	else:
 		apply_central_force(-get_gravity())
-		set_axis_velocity(Vector3.UP * (2 - averageLength) * 50)
+		set_axis_velocity(Vector3.UP * (2 - averageLength) * 20)
 		coyoteTimeTimer = 0
 
 	if Input.is_action_pressed("jump") and coyoteTimeTimer <= COYOTE_TIME:
