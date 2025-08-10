@@ -17,14 +17,19 @@ func zoom_in() -> void:
 		springArm.spring_length -= ZOOM_STEPS
 		springArm.spring_length = max(springArm.spring_length, MIN_ZOOM)
 	else:
-		springArm.spring_length -= MIN_ZOOM
+		springArm.spring_length -= ZOOM_STEPS
 		springArm.spring_length = max(springArm.spring_length, 0)
 		first_person = true
 
-func zoom_out() -> void:
+		set_horizontal_offset(0)
+
+func zoom_out(shift_lock: bool) -> void:
 	if first_person:
 		springArm.spring_length += MIN_ZOOM
 		first_person = false
+
+		if shift_lock:
+			set_horizontal_offset(1.75)
 	else:
 		springArm.spring_length += ZOOM_STEPS
 		springArm.spring_length = min(springArm.spring_length, 400)

@@ -29,7 +29,7 @@ func _input(event: InputEvent) -> void:
 		mouse_locked = shift_lock || camera.first_person
 
 	if event.is_action("zoom_out") and event.is_pressed():
-		camera.zoom_out()
+		camera.zoom_out(shift_lock)
 		mouse_locked = shift_lock || camera.first_person
 	
 	if event.is_action("shift_lock") and event.is_pressed():
