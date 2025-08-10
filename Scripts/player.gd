@@ -10,12 +10,11 @@ const MAX_SPEED = 16
 const GROUND_ACCELERATION = 800
 const AIR_ACCELERATION = 150
 const JUMP_VELOCITY = 55
-const COYOTE_TIME = 0.08
+const COYOTE_TIME = 0.10
 const PICKLE_TIME = "All The Damn Time"
 
 var currentSpeed = 0
 var coyoteTimeTimer = 0
-var isOnFloor = false
 
 # camera
 const SHIFTLOCK_OFFSET = 1.75
@@ -58,13 +57,13 @@ func _input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	var averageLength = hitboxLegs.get_average_length()
 
-	isOnFloor = averageLength < 2.0 && (linear_velocity.y < 0.5 or isOnFloor)
+	var isOnFloor = averageLength < 2
 
 	if not isOnFloor:
 		coyoteTimeTimer += delta
 	else:
-		# 1.65 perfectly counteracts gravity for some reason so we need to add it into our calc
-		set_axis_velocity(Vector3.UP * 1.65 + Vector3.UP * (2 - averageLength) * 50)
+		apply_central_force(-get_gravity())
+		set_axis_velocity(Vector3.UP * (2 - averageLength) * 50)
 		coyoteTimeTimer = 0
 
 	if Input.is_action_pressed("jump") and coyoteTimeTimer <= COYOTE_TIME:
@@ -77,7 +76,7 @@ func _physics_process(delta: float) -> void:
 	var direction = (baseNode.transform.basis.rotated(Vector3.UP, camera.rotation.y) * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	var targetMovementVector = direction * MAX_SPEED
 
-	if isOnFloor:
+	if coyoteTimeTimer < COYOTE_TIME:
 		accelerate(targetMovementVector, GROUND_ACCELERATION)
 	else:
 		accelerate(targetMovementVector, AIR_ACCELERATION)
