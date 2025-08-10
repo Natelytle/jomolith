@@ -10,36 +10,62 @@ extends Node3D
 @onready var backLeft: RayCast3D = $"BackLeft/RayCast3D"
 @onready var backRight: RayCast3D = $"BackRight/RayCast3D"
 
+var leftPoints = []
 var centerPoints = []
-var otherPoints = []
+var rightPoints = []
+
+var allPoints = []
 
 func _ready() -> void:
+	leftPoints.append_array([left, frontLeft, backLeft])
 	centerPoints.append_array([center, front, back])
-	otherPoints.append_array([left, right, frontLeft, frontRight, backLeft, backRight])
+	rightPoints.append_array([right, frontRight, backRight])
+	allPoints.append_array([leftPoints, centerPoints, rightPoints])
 
 func get_average_length() -> float:
-	var centerDistances = []
+	var averages = []
 
-	for point in centerPoints:
-		if point.is_colliding():
-			centerDistances.append(point.global_transform.origin.distance_to(point.get_collision_point()))
-
-	if centerDistances.size() > 0:
-		centerDistances.sort()
-
+	for points in [leftPoints, centerPoints, rightPoints]:
 		var sum = 0
 		var div = 0
 
-		for i in min(centerDistances.size(), 6):
-			sum += centerDistances[i]
-			div += 1
+		for point in points:
+			if point.is_colliding():
+				# subtract 0.05 because we shifted all the raycasts into the body by that length
+				var length = point.global_transform.origin.distance_to(point.get_collision_point()) - 0.05
 
-		return sum / div
+				sum += length
+				div += 1
+		
+		if div > 0:
+			averages.append(sum / div)
+
 	
-	var minDistance = 4
+	if averages.size() == 0:
+		return 4
 
-	for point in otherPoints:
-		if point.is_colliding():
-			minDistance = min(point.global_transform.origin.distance_to(point.get_collision_point()), minDistance)
+	return _calculate_median(averages)
 
-	return minDistance
+
+# func get_min_length() -> float:
+
+
+
+func _calculate_median(data_list: Array) -> float:
+	# Sort the list in ascending order.
+	data_list.sort()
+
+	var list_size = data_list.size()
+	var median_value: float
+
+	if list_size % 2 == 1:
+		# If the list size is odd, the median is the middle element.
+		var middle_index = list_size / 2
+		median_value = float(data_list[middle_index])
+	else:
+		# If the list size is even, the median is the average of the two middle elements.
+		var index1 = (list_size / 2) - 1
+		var index2 = list_size / 2
+		median_value = (float(data_list[index1]) + float(data_list[index2])) / 2.0
+
+	return median_value
