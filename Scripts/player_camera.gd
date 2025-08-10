@@ -29,4 +29,4 @@ func zoom_out() -> void:
 		playerCamera.spring_length = min(playerCamera.spring_length, 400)
 
 func _process(_delta: float) -> void:
-	global_position = $"..".global_position + Vector3.UP * 4.5
+	global_position = $"../PlayerCenter/CameraAnchor".global_position

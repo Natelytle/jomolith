@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Jomolith"
-run/main_scene="res://Scenes/main.tscn"
+run/main_scene="uid://bdcgss0ixl0sd"
 config/features=PackedStringArray("4.4", "Mobile")
 config/icon="res://icon.svg"
 
@@ -82,4 +82,6 @@ common/physics_ticks_per_second=120
 common/physics_jitter_fix=0.0
 3d/physics_engine="Jolt Physics"
 3d/default_gravity=196.2
+3d/default_linear_damp=0.0
+3d/default_angular_damp=0.0
 common/physics_interpolation=true

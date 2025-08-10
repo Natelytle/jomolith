@@ -1,17 +1,18 @@
-extends CharacterBody3D
-@onready var camera: Node3D = $"PlayerCameraPivot"
-@onready var hitbox: CollisionShape3D = $"HitboxTorso"
-@onready var hitboxLegs: Node3D = hitbox.get_node("HitboxLegs")
+extends RigidBody3D
+
+@onready var baseNode: Node3D = $".."
+@onready var camera: Node3D = $"../PlayerCameraPivot"
+@onready var hitboxLegs: Node3D = $"PlayerLegs"
 
 # movement
 const MAX_SPEED = 16
-const GROUND_ACCELERATION = 80
-const AIR_ACCELERATION = 15
+const GROUND_ACCELERATION = 800
+const AIR_ACCELERATION = 150
 const JUMP_VELOCITY = 50
 const COYOTE_TIME = 0.08
+const PICKLE_TIME = "All The Damn Time"
 
 var currentSpeed = 0
-var currentMovementVector = Vector3.ZERO
 var coyoteTimeTimer = 0
 
 # mouse
@@ -44,11 +45,6 @@ func _input(event: InputEvent) -> void:
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
-func _process(_delta: float) -> void:
-	# Handle turning with and without shift-lock
-	if mouse_locked:
-		hitbox.rotation.y = camera.rotation.y
-
 
 func _physics_process(delta: float) -> void:
 	var averageLength = hitboxLegs.get_average_length()
@@ -56,45 +52,53 @@ func _physics_process(delta: float) -> void:
 	var isOnFloor = averageLength < 2.1
 
 	if not isOnFloor:
-		velocity += get_gravity() * delta
 		coyoteTimeTimer += delta
 	else:
-		velocity.y = -get_gravity().y * (2 - averageLength) / 10
+		# 1.65 perfectly counteracts gravity for some reason so we need to add it into our calc
+		set_axis_velocity(Vector3.UP * 1.65 + Vector3.UP * (2 - averageLength) * 50)
 		coyoteTimeTimer = 0
 
 	if Input.is_action_pressed("jump") and coyoteTimeTimer <= COYOTE_TIME:
-		velocity.y = JUMP_VELOCITY
+		set_axis_velocity(Vector3.UP * JUMP_VELOCITY)
 		coyoteTimeTimer += COYOTE_TIME
 
 	# Get the input direction and handle the movement/deceleration.
 	var input_dir := Input.get_vector("left", "right", "forward", "backward")
 	
-	var direction = (transform.basis.rotated(Vector3.UP, camera.rotation.y) * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	var direction = (baseNode.transform.basis.rotated(Vector3.UP, camera.rotation.y) * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	var targetMovementVector = direction * MAX_SPEED
 
 	if isOnFloor:
-		currentMovementVector = accelerate(currentMovementVector, targetMovementVector, GROUND_ACCELERATION, delta)
+		accelerate(targetMovementVector, GROUND_ACCELERATION)
 	else:
-		currentMovementVector = accelerate(currentMovementVector, targetMovementVector, AIR_ACCELERATION, delta)
+		accelerate(targetMovementVector, AIR_ACCELERATION)
+	
+	# we always attempt to upright the character.
 
-	velocity.x = currentMovementVector.x
-	velocity.z = currentMovementVector.z
-
-	if not mouse_locked and direction.length() > 0:
-		hitbox.rotation.y = lerp_angle(hitbox.rotation.y, atan2(-direction.x, -direction.z), 10 * delta)
-
-	move_and_slide()
+	if not mouse_locked:
+		rotate_to_direction(direction)
 
 
-func accelerate(current: Vector3, target: Vector3, accel: float, delta: float) -> Vector3:
-	var factor = 1.0 - pow(0.2, 80.0 * delta)
-	var scaledAccel = accel * (10.0 * delta)
+func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
+	# Handle turning with shift-lock
+	if mouse_locked:
+		rotation.y = camera.rotation.y
 
-	var lerp_z = lerp(current, target, factor)
-	var accel_z = current + (target - current).normalized() * scaledAccel
 
-	# Whichever one accelerates the player less is the chosen one
-	if ((lerp_z - current).length() > (accel_z - current).length()):
-		return accel_z
+func accelerate(target: Vector3, accel: float) -> void:
+	var correctionVector = target - Vector3(linear_velocity.x, 0, linear_velocity.z)
+
+	var length = min(accel, 100 * correctionVector.length())
+
+	correctionVector = correctionVector.normalized() * length
+
+	apply_central_force(correctionVector)
+
+
+func rotate_to_direction(target: Vector3) -> void:
+	if target.length() > 0:
+		var torque = (-transform.basis.z).signed_angle_to(target, Vector3.UP)
+
+		angular_velocity = baseNode.transform.basis.y * torque * 10
 	else:
-		return lerp_z
+		angular_velocity = Vector3.UP * 0
