@@ -86,12 +86,8 @@ func _physics_process(delta: float) -> void:
 
 	if not mouse_locked:
 		rotate_to_direction(direction)
-
-
-func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
-	# Handle turning with shift-lock
-	if mouse_locked:
-		rotation.y = camera.rotation.y
+	else:
+		snap_to_camera(direction)
 
 
 func accelerate(target: Vector3, accel: float) -> void:
@@ -111,3 +107,15 @@ func rotate_to_direction(target: Vector3) -> void:
 		angular_velocity = baseNode.transform.basis.y * torque * 10
 	else:
 		angular_velocity = Vector3.UP * 0
+
+func snap_to_camera(direction: Vector3) -> void:
+	var camera_rotation = (baseNode.transform.basis.rotated(Vector3.UP, camera.rotation.y) * Vector3(0, 0, -1)).normalized()
+
+	var difference = (-transform.basis.z).signed_angle_to(camera_rotation, Vector3.UP)
+
+	rotation.y = camera.rotation.y
+
+	if direction:
+		angular_velocity = baseNode.transform.basis.y * difference * 40
+	else:
+		angular_velocity = baseNode.transform.basis.y * 0
