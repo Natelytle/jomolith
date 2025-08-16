@@ -153,7 +153,9 @@ public partial class Humanoid : RigidBody3D
 				if (!groundCheckerZ.IsColliding()) 
 					continue;
 
-				if (groundCheckerZ.GetCollisionNormal().AngleTo(WorldYVector) > MaxSlope)
+				float collisionSlope = groundCheckerZ.GetCollisionNormal().AngleTo(WorldYVector);
+
+				if (collisionSlope > Single.DegreesToRadians(MaxSlope))
 					continue;
 
 				float length = groundCheckerZ.GlobalTransform.Origin.DistanceTo(groundCheckerZ.GetCollisionPoint()) - GroundCheckerEpsilon;
