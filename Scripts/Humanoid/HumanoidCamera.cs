@@ -52,6 +52,13 @@ public partial class HumanoidCamera : Node
         {
             _cameraAnchor.GlobalPosition = Subject.GlobalPosition + Subject.Basis.Y * 2 + Subject.Basis.X * _horizontalOffset;
         }
+
+        _cameraSpringArm.SpringLength = Single.Min((_cameraAnchor.GlobalPosition - _camera.GlobalPosition).Length(),
+            _cameraSpringArm.SpringLength);
+
+        // Update spring arm length
+        float amount = 1 - Single.Pow(0.5f, (float)delta * 30);
+        _cameraSpringArm.SpringLength = float.Lerp(_cameraSpringArm.SpringLength, _currentDistance, amount);
     }
     
     public override void _UnhandledInput(InputEvent e)
@@ -100,8 +107,6 @@ public partial class HumanoidCamera : Node
 
     private void SetCameraToDistance(float newDistance)
     {
-        float lastDistance = _currentDistance;
-
         newDistance = Math.Clamp(newDistance, MinDistance, MaxDistance);
 
         if (newDistance < FirstPersonThreshold)
@@ -116,9 +121,11 @@ public partial class HumanoidCamera : Node
             if (_firstPerson)
                 ExitFirstPerson();
         }
+    }
 
-        // TODO: Replace with tween
-        _cameraSpringArm.SpringLength = _currentDistance;
+    private void UpdateSpringLength()
+    {
+        
     }
 
     private void EnterFirstPerson()
