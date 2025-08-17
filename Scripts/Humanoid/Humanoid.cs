@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using Jomolith.Scripts.Humanoid.HumanoidStates;
 using static Jomolith.Scripts.Utils.MathUtils;
 
 namespace Jomolith.Scripts.Humanoid;
@@ -11,41 +12,44 @@ public partial class Humanoid : RigidBody3D
 	private const int GroundCheckerCountX = 3;
 	private const int GroundCheckerCountZ = 3;
 
-	public enum GroundingState {
-		Airborne,
-		Coyote,
-		Grounded
-	}
-
 	// Nodes
 	private BoxShape3D _torsoCollisionBox;
 	private RayCast3D[][] _groundCheckers;
+	private RayCast3D _climbCheckerUp;
+	private RayCast3D _climbCheckerDown;
 	private CollisionShape3D _collisionShape;
 	private HumanoidCamera _camera;
+	private HumanoidStateMachine _stateMachine;
 
 	// Avatar information
 	private Vector3 _groundCheckerNormal = Vector3.Down;
 	private const float TorsoHeight = 3.0f;
-	private const float HipHeight = 2.0f;
+	public const float HipHeight = 2.0f;
 	private const float MaxStairLength = 1.95f;
+	private const float MaxLadderHeight = 2.5f;
+	private const float MinLadderGap = 0.05f;
 	private const float HitboxHeight = 3.0f;
 	private const float HitboxWidth = 2.0f;
 	private const float HitboxDepth = 1.0f;
 
 	// Directional info
 	private static Vector3 WorldXVector => Vector3.Right;
-	private static Vector3 WorldYVector => Vector3.Up;
+	public static Vector3 WorldYVector => Vector3.Up;
 	private static Vector3 WorldZVector => Vector3.Forward;
 
 	private static Basis WorldBasis => new(WorldXVector, WorldYVector, -WorldZVector);
 
 	private Vector3 PlayerXVector => Basis.X;
-	private Vector3 PlayerYVector => Basis.Y;
-	private Vector3 PlayerZVector => -Basis.Z;
+	public Vector3 PlayerYVector => Basis.Y;
+	public Vector3 PlayerZVector => -Basis.Z;
 	private Basis PlayerBasis => Basis;
+
+	public bool RotationLocked => _camera.CameraLocked;
 
 	public override void _Ready()
 	{
+		CanSleep = false;
+
 		PhysicsMaterial physicsMaterial = new PhysicsMaterial();
 		physicsMaterial.Friction = 0.3f;
 
@@ -60,19 +64,17 @@ public partial class Humanoid : RigidBody3D
 			for (int z = 0; z < GroundCheckerCountZ; z++)
 			{
 				RayCast3D ray = new();
-				ray.ExcludeParent = true;
-				ray.Enabled = true;
 
-				Vector3 yOffset = WorldYVector * GroundCheckerEpsilon + WorldYVector * (HipHeight - TorsoHeight) / 2.0f;
-				Vector3 xOffset = WorldXVector * HitboxWidth * ((x - (GroundCheckerCountX - 1) / 2.0f) / (GroundCheckerCountX - 1));
-				Vector3 zOffset = WorldZVector * HitboxDepth * ((z - (GroundCheckerCountZ - 1) / 2.0f) / (GroundCheckerCountZ - 1));
+				Vector3 yOffset = PlayerYVector * GroundCheckerEpsilon + WorldYVector * (HipHeight - TorsoHeight) / 2.0f;
+				Vector3 xOffset = PlayerXVector * HitboxWidth * ((x - (GroundCheckerCountX - 1) / 2.0f) / (GroundCheckerCountX - 1));
+				Vector3 zOffset = PlayerZVector * HitboxDepth * ((z - (GroundCheckerCountZ - 1) / 2.0f) / (GroundCheckerCountZ - 1));
 
 				// Adjust the outer rays inwards a bit to prevent weird behaviour at platform edges.
 				xOffset *= 1 - 0.05f / (HitboxWidth / 2.0f);
 				zOffset *= 1 - 0.05f / (HitboxDepth / 2.0f);
 
 				// Position the rays in a 3x3 grid at hip height
-				ray.Transform = new Transform3D(Basis.Identity, yOffset + xOffset + zOffset);
+				ray.Position = yOffset + xOffset + zOffset;
 				ray.TargetPosition = -Basis.Y * (HipHeight + MaxStairLength) + -Basis.Y * GroundCheckerEpsilon;
 
 				_groundCheckers[x][z] = ray;
@@ -80,6 +82,21 @@ public partial class Humanoid : RigidBody3D
 				AddChild(ray);
 			}
 		}
+		
+		_climbCheckerUp = new RayCast3D();
+
+		Vector3 climbRayZOffset = PlayerZVector * 0.75f;
+		Vector3 climbRayYOffset = -PlayerYVector * (HipHeight + TorsoHeight) / 2.0f + PlayerYVector * 0.5f;
+
+		_climbCheckerUp.Position = climbRayZOffset + climbRayYOffset;
+		_climbCheckerUp.TargetPosition = PlayerYVector * MaxLadderHeight;
+		AddChild(_climbCheckerUp);
+
+		// this one is just flipped
+		_climbCheckerDown = new RayCast3D();
+		_climbCheckerDown.Position = _climbCheckerUp.Position + _climbCheckerUp.TargetPosition;
+		_climbCheckerDown.TargetPosition = -_climbCheckerUp.TargetPosition;
+		AddChild(_climbCheckerDown);
 
 		_torsoCollisionBox = new BoxShape3D();
 		_torsoCollisionBox.Size = new Vector3(HitboxWidth, HitboxHeight, HitboxDepth);
@@ -92,54 +109,37 @@ public partial class Humanoid : RigidBody3D
 		_camera = new HumanoidCamera();
 		_camera.Subject = this;
 		AddChild(_camera);
+		
+		// State machine
+		_stateMachine = new HumanoidStateMachine();
+
+		HumanoidState falling = new Falling(this);
+
+		_stateMachine.AddChild(falling);
+		_stateMachine.AddChild(new Standing(this));
+		_stateMachine.AddChild(new Coyote(this));
+		_stateMachine.AddChild(new Climbing(this));
+		_stateMachine.AddChild(new StandClimbing(this));
+
+		_stateMachine.InitialState = falling; 
+		
+		AddChild(_stateMachine);
 	}
 
 	// Movement info
-	private const float GroundAcceleration = 800f;
-	private const float AirAcceleration = 150f;
-	private const float MaxSpeed = 16f;
+	private const float WalkSpeed = 16f;
 	private const float JumpPower = 55f;
 	private const float MaxSlope = 89f;
 
-	private const double CoyoteTime = 0.1f;
-	private double _coyoteTick;
-	private GroundingState _grounding = GroundingState.Airborne;
-
-	public override void _PhysicsProcess(double delta)
+	public Vector3 GetMoveDirection()
 	{
-		ProcessGroundCheckers();
-		ApplyUprightForce();
-		
-		if (_grounding == GroundingState.Coyote)
-		{
-			_coyoteTick -= delta;
-
-			if (_coyoteTick <= 0)
-				_grounding = GroundingState.Airborne;
-		}
-		
 		Vector2 inputDir = Input.GetVector("left", "right", "forward", "backward");
 		Vector3 direction = (WorldBasis.Rotated(Vector3.Up, _camera.Rotation.Y) * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
-		
-		if (_camera.CameraLocked)
-			SnapToCamera();
-		else
-			RotateToDirection(direction);
-		
-		Vector3 targetMovementVector = direction * MaxSpeed;
 
-		if (_grounding == GroundingState.Grounded)
-			ApplyAcceleration(targetMovementVector, GroundAcceleration);
-		else if (_grounding is GroundingState.Coyote or GroundingState.Airborne)
-			ApplyAcceleration(targetMovementVector, AirAcceleration);
-
-		if (Input.IsActionPressed("jump") && _grounding is GroundingState.Grounded or GroundingState.Coyote)
-		{
-			Jump();
-		}
+		return direction;
 	}
 
-	private void ProcessGroundCheckers() 
+	public float GetFloorDistance() 
 	{
 		List<float> averages = [];
 		
@@ -170,33 +170,102 @@ public partial class Humanoid : RigidBody3D
 
 		float medianLength = averages.Count > 0 ? GetMedian(averages.ToArray()) : 4;
 
-		// We're considered touching the ground if our legs are colliding with the ground and we have no upwards velocity.
-		bool touchingGround = medianLength < HipHeight + 0.05 && (LinearVelocity.Y < 5 || _grounding == GroundingState.Grounded);
+		return medianLength;
 
-		if (!touchingGround) {
-			if (_grounding == GroundingState.Grounded)
-			{
-				_grounding = GroundingState.Coyote;
-				_coyoteTick = CoyoteTime;
-			}
-			
-			return;
+		// // We're considered touching the ground if our legs are colliding with the ground and we have no upwards velocity.
+		// bool touchingGround = medianLength < HipHeight + 0.05 && (LinearVelocity.Y < 5 || _grounding == GroundingState.Grounded);
+		//
+		// if (!touchingGround) {
+		// 	if (_grounding != GroundingState.Grounded) 
+		// 		return;
+		//
+		// 	_grounding = GroundingState.Coyote;
+		// 	_coyoteTick = CoyoteTime;
+		//
+		// 	return;
+		// }
+		//
+		// if (_grounding is GroundingState.Climbing)
+		// {
+		// 	_grounding = GroundingState.ClimbStanding;
+		// 	return;
+		// }
+		//
+		// _grounding = GroundingState.Grounded;
+		//
+		// // Counteract gravity and adjust our legs to the floor.
+		// ApplyCentralForce(-GetGravity() * Mass);
+		// SetAxisVelocity(PlayerYVector * (HipHeight - medianLength) * 20);
+	}
+
+	public bool IsClimbing()
+	{
+		if (!(_climbCheckerUp.IsColliding() && _climbCheckerDown.IsColliding()))
+		{
+			// switch (_grounding)
+			// {
+			// 	case GroundingState.Climbing:
+			// 		_grounding = GroundingState.Airborne;
+			// 		break;
+			// 	case GroundingState.ClimbStanding:
+			// 		_grounding = GroundingState.Grounded;
+			// 		break;
+			// }
+
+			return false;
 		}
 
-		_grounding = GroundingState.Grounded;
+		float length = (_climbCheckerUp.GetCollisionPoint() - _climbCheckerDown.GetCollisionPoint()).Length();
 
-		// Counteract gravity and adjust our legs to the floor.
-		ApplyCentralForce(-GetGravity() * Mass);
-		SetAxisVelocity(PlayerYVector * (HipHeight - medianLength) * 20);
+		return length > MinLadderGap;
+
+		//
+		// if (length < MinLadderGap)
+		// {
+		// 	switch (_grounding)
+		// 	{
+		// 		case GroundingState.Climbing:
+		// 			_grounding = GroundingState.Airborne;
+		// 			break;
+		// 		case GroundingState.ClimbStanding:
+		// 			_grounding = GroundingState.Grounded;
+		// 			break;
+		// 	}
+		//
+		// 	return;
+		// }
+
+		//
+		// _grounding = GroundingState.Climbing;
+		// ApplyCentralForce(-GetGravity() * Mass);
+		//
+		// // We want to arrest movement in the X and Y directions, with acceleration of up to 140 studs/s^2
+		// Vector3 correctionVector = new Vector3(-LinearVelocity.X, 0, -LinearVelocity.Z);
+		// float speed = Math.Min(correctionVector.Length() * 50f, 14000f);
+		// correctionVector = correctionVector.Normalized() * speed;
+		//
+		// ApplyCentralForce(correctionVector);
 	}
 
-	private void Jump()
+	public void Walk(Vector3 direction, float acceleration)
+	{
+		Vector3 target = direction * WalkSpeed;
+
+		Vector3 correctionVector = target - new Vector3(LinearVelocity.X, 0, LinearVelocity.Z);
+
+		float length = Math.Min(acceleration, 100 * correctionVector.Length());
+
+		correctionVector = correctionVector.Normalized() * length;
+		
+		ApplyCentralForce(correctionVector);
+	}
+
+	public void Jump()
 	{
 		SetAxisVelocity(WorldYVector * JumpPower);
-		_grounding = GroundingState.Airborne;
 	}
 
-	private void RotateToDirection(Vector3 target)
+	public void RotateTo(Vector3 target)
 	{
 		Vector3 otherRotation = AngularVelocity.RemoveAngularComponent(WorldBasis.Y);
 
@@ -215,25 +284,14 @@ public partial class Humanoid : RigidBody3D
 		SetAngularVelocity(otherRotation + WorldBasis.Y * angle * 10.0f);
 	}
 
-	private void SnapToCamera()
+	public void SnapToCamera()
 	{
 		Vector3 currentRotation = Rotation;
 		currentRotation.Y = _camera.Rotation.Y;
 		Rotation = currentRotation;
 	}
-
-	private void ApplyAcceleration(Vector3 target, float acceleration)
-	{
-		Vector3 correctionVector = target - new Vector3(LinearVelocity.X, 0, LinearVelocity.Z);
-
-		float length = MathF.Min(acceleration, 100 * correctionVector.Length());
-
-		correctionVector = correctionVector.Normalized() * length;
-		
-		ApplyCentralForce(correctionVector);
-	}
-
-	private void ApplyUprightForce()
+	
+	public void ApplyUprightForce()
 	{
 		Vector3 cross = PlayerYVector.Cross(WorldYVector).Normalized();
 
