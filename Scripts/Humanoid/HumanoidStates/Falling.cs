@@ -43,8 +43,10 @@ public partial class Falling(Humanoid player) : HumanoidState("Falling", player)
         else
             Player.RotateTo(targetMovementVector);
 
+        float backwardsVelocity = Player.GetLinearVelocity().Project(-Player.PlayerZVector).Length();
+
         // Transition to other states
-        if (Player.IsClimbing())
+        if (Player.IsClimbing() && backwardsVelocity < 0.5)
         {
             EmitSignalFinished(this, "Climbing");
         }

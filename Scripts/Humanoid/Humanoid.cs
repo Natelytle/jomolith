@@ -171,80 +171,16 @@ public partial class Humanoid : RigidBody3D
 		float medianLength = averages.Count > 0 ? GetMedian(averages.ToArray()) : 4;
 
 		return medianLength;
-
-		// // We're considered touching the ground if our legs are colliding with the ground and we have no upwards velocity.
-		// bool touchingGround = medianLength < HipHeight + 0.05 && (LinearVelocity.Y < 5 || _grounding == GroundingState.Grounded);
-		//
-		// if (!touchingGround) {
-		// 	if (_grounding != GroundingState.Grounded) 
-		// 		return;
-		//
-		// 	_grounding = GroundingState.Coyote;
-		// 	_coyoteTick = CoyoteTime;
-		//
-		// 	return;
-		// }
-		//
-		// if (_grounding is GroundingState.Climbing)
-		// {
-		// 	_grounding = GroundingState.ClimbStanding;
-		// 	return;
-		// }
-		//
-		// _grounding = GroundingState.Grounded;
-		//
-		// // Counteract gravity and adjust our legs to the floor.
-		// ApplyCentralForce(-GetGravity() * Mass);
-		// SetAxisVelocity(PlayerYVector * (HipHeight - medianLength) * 20);
 	}
 
 	public bool IsClimbing()
 	{
 		if (!(_climbCheckerUp.IsColliding() && _climbCheckerDown.IsColliding()))
-		{
-			// switch (_grounding)
-			// {
-			// 	case GroundingState.Climbing:
-			// 		_grounding = GroundingState.Airborne;
-			// 		break;
-			// 	case GroundingState.ClimbStanding:
-			// 		_grounding = GroundingState.Grounded;
-			// 		break;
-			// }
-
 			return false;
-		}
 
 		float length = (_climbCheckerUp.GetCollisionPoint() - _climbCheckerDown.GetCollisionPoint()).Length();
 
 		return length > MinLadderGap;
-
-		//
-		// if (length < MinLadderGap)
-		// {
-		// 	switch (_grounding)
-		// 	{
-		// 		case GroundingState.Climbing:
-		// 			_grounding = GroundingState.Airborne;
-		// 			break;
-		// 		case GroundingState.ClimbStanding:
-		// 			_grounding = GroundingState.Grounded;
-		// 			break;
-		// 	}
-		//
-		// 	return;
-		// }
-
-		//
-		// _grounding = GroundingState.Climbing;
-		// ApplyCentralForce(-GetGravity() * Mass);
-		//
-		// // We want to arrest movement in the X and Y directions, with acceleration of up to 140 studs/s^2
-		// Vector3 correctionVector = new Vector3(-LinearVelocity.X, 0, -LinearVelocity.Z);
-		// float speed = Math.Min(correctionVector.Length() * 50f, 14000f);
-		// correctionVector = correctionVector.Normalized() * speed;
-		//
-		// ApplyCentralForce(correctionVector);
 	}
 
 	public void Walk(Vector3 direction, float acceleration)
@@ -263,6 +199,18 @@ public partial class Humanoid : RigidBody3D
 	public void Jump()
 	{
 		SetAxisVelocity(WorldYVector * JumpPower);
+	}
+
+	public void LadderJump()
+	{
+		Vector3 backwardsVector = -PlayerZVector;
+		Plane plane = new Plane(Vector3.Up);
+		backwardsVector = plane.Project(backwardsVector);
+		backwardsVector = backwardsVector.Normalized();
+
+		Vector3 directionVector = (WorldYVector + backwardsVector).Normalized();
+
+		SetAxisVelocity(directionVector * JumpPower);
 	}
 
 	public void RotateTo(Vector3 target)

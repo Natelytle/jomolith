@@ -48,6 +48,11 @@ public partial class Climbing(Humanoid player) : HumanoidState("Climbing", playe
         {
             EmitSignalFinished(this, "StandClimbing");
         }
+        else if (Input.IsActionPressed("jump"))
+        {
+            Player.LadderJump();
+            EmitSignalFinished(this, "Falling");
+        }
     }
 
     private void Climb(Vector3 target)
