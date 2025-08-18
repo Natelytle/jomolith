@@ -2,12 +2,12 @@ using Godot;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Falling(Humanoid player) : Balancing("Falling", player, 5000f, 50f)
+public class Falling(Humanoid player)
+    : Moving("Falling", player, 150f, kP: 5000f)
 {
-    private const float Acceleration = 150f;
-
     public override void OnEnter()
     {
+        Player.GetPhysicsMaterialOverride().Friction = 0f;
     }
 
     public override void OnExit()
@@ -33,15 +33,6 @@ public class Falling(Humanoid player) : Balancing("Falling", player, 5000f, 50f)
             float impactForce = -Player.LinearVelocity.Y * Player.Mass;
             Player.ApplyCentralImpulse(Humanoid.WorldYVector * impactForce);
         }
-        
-        Vector3 targetMovementVector = Player.GetMoveDirection();
-        
-        Player.Walk(targetMovementVector, Acceleration);
-
-        if (Player.RotationLocked)
-            Player.SnapToCamera();
-        else
-            Player.RotateTo(targetMovementVector);
 
         float backwardsVelocity = Player.GetLinearVelocity().Project(-Player.PlayerZVector).Length();
 
@@ -52,7 +43,7 @@ public class Falling(Humanoid player) : Balancing("Falling", player, 5000f, 50f)
         }
         else if (touchingGround)
         {
-            InvokeFinished(this, "Standing");
+            InvokeFinished(this, "Running");
         }
     }
 }

@@ -4,18 +4,15 @@ namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
 public class Balancing : HumanoidState
 {
-    private float _kP = 2250.0f;
-    private float _kD = 50.0f;
+    private readonly float _kP;
+    private readonly float _kD;
 
-    public Balancing(string stateName, Humanoid player, float kP, float kD)
+    protected Balancing(string stateName, Humanoid player, float kP = 2250.0f, float kD = 50.0f)
         : base(stateName, player)
     {
         _kP = kP;
         _kD = kD;
     }
-    
-    public Balancing(string stateName, Humanoid player)
-    : base(stateName, player) { }
 
     public override void OnEnter()
     {

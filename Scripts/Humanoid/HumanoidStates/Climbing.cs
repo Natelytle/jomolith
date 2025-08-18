@@ -3,7 +3,8 @@ using Godot;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Climbing(Humanoid player) : Balancing("Climbing", player)
+public class Climbing(Humanoid player)
+    : Balancing("Climbing", player)
 {
     public override void OnEnter()
     {
@@ -23,7 +24,7 @@ public class Climbing(Humanoid player) : Balancing("Climbing", player)
 
         // Counteract gravity and adjust horizontal speed to 0.
         Player.ApplyCentralForce(-Player.GetGravity() * Player.Mass);
-        Vector3 correctionVector = new Vector3(-Player.LinearVelocity.X, 0, -Player.LinearVelocity.Z);
+        Vector3 correctionVector = new(-Player.LinearVelocity.X, 0, -Player.LinearVelocity.Z);
         float adjustmentForce = Math.Min(correctionVector.Length() * 50f, 14000f);
         Player.ApplyCentralForce(correctionVector.Normalized() * adjustmentForce);
 
@@ -35,9 +36,6 @@ public class Climbing(Humanoid player) : Balancing("Climbing", player)
         Vector3 targetMovementVector = Player.GetMoveDirection();
 
         Climb(targetMovementVector);
-        
-        if (Player.RotationLocked)
-            Player.SnapToCamera();
         
         // Transition to other states
         if (!Player.IsClimbing())
@@ -57,7 +55,7 @@ public class Climbing(Humanoid player) : Balancing("Climbing", player)
 
     private void Climb(Vector3 target)
     {
-        Vector3 velocityVector = new Vector3(Player.LinearVelocity.X, 0, Player.LinearVelocity.Z);
+        Vector3 velocityVector = new(Player.LinearVelocity.X, 0, Player.LinearVelocity.Z);
 
         if (target.Length() > 0)
         {

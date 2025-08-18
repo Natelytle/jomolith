@@ -2,9 +2,9 @@ using Godot;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Coyote(Humanoid player) : Balancing("Coyote", player, 5000f, 50f)
+public class Coyote(Humanoid player)
+    : Moving("Coyote", player, 150f, kP: 5000f)
 {
-    private const float Acceleration = 150f;
     private const double CoyoteTime = 0.125d; 
 
     private double _coyoteTimer;
@@ -12,6 +12,7 @@ public class Coyote(Humanoid player) : Balancing("Coyote", player, 5000f, 50f)
     public override void OnEnter()
     {
         _coyoteTimer = 0;
+        Player.GetPhysicsMaterialOverride().Friction = 0f;
     }
 
     public override void OnExit()
@@ -38,15 +39,6 @@ public class Coyote(Humanoid player) : Balancing("Coyote", player, 5000f, 50f)
             Player.ApplyCentralImpulse(Humanoid.WorldYVector * impactForce);
         }
         
-        Vector3 targetMovementVector = Player.GetMoveDirection();
-        
-        Player.Walk(targetMovementVector, Acceleration);
-
-        if (Player.RotationLocked)
-            Player.SnapToCamera();
-        else
-            Player.RotateTo(targetMovementVector);
-        
         _coyoteTimer += delta;
         
         // Transition to other states
@@ -56,7 +48,7 @@ public class Coyote(Humanoid player) : Balancing("Coyote", player, 5000f, 50f)
         }
         else if (touchingGround)
         {
-            InvokeFinished(this, "Standing");
+            InvokeFinished(this, "Running");
         }
         else if (_coyoteTimer > CoyoteTime)
         {

@@ -37,7 +37,7 @@ public partial class Humanoid : RigidBody3D
 	public static Vector3 WorldYVector => Vector3.Up;
 	private static Vector3 WorldZVector => Vector3.Forward;
 
-	private static Basis WorldBasis => new(WorldXVector, WorldYVector, -WorldZVector);
+	public static Basis WorldBasis => new(WorldXVector, WorldYVector, -WorldZVector);
 
 	private Vector3 PlayerXVector => Basis.X;
 	public Vector3 PlayerYVector => Basis.Y;
@@ -49,10 +49,9 @@ public partial class Humanoid : RigidBody3D
 	public override void _Ready()
 	{
 		CanSleep = false;
+		ContinuousCd = true;
 
-		PhysicsMaterial physicsMaterial = new PhysicsMaterial();
-		physicsMaterial.Friction = 0.3f;
-
+		PhysicsMaterial physicsMaterial = new();
 		SetPhysicsMaterialOverride(physicsMaterial);
 
 		_groundCheckers = new RayCast3D[GroundCheckerCountX][];
@@ -112,7 +111,7 @@ public partial class Humanoid : RigidBody3D
 		
 		// State machine
 		_stateMachine = new HumanoidStateMachine();
-		_stateMachine.AddState(new Standing(this));
+		_stateMachine.AddState(new Running(this));
 		_stateMachine.AddState(new Falling(this));
 		_stateMachine.AddState(new Coyote(this));
 		_stateMachine.AddState(new Climbing(this));
@@ -127,6 +126,12 @@ public partial class Humanoid : RigidBody3D
 	private const float WalkSpeed = 16.0f;
 	private const float JumpPower = 55.0f;
 	private const float MaxSlope = 89.0f;
+
+	public override void _IntegrateForces(PhysicsDirectBodyState3D state)
+	{
+		if (RotationLocked)
+			state.SetTransform(Transform.RotatedLocal(WorldYVector, _camera.Rotation.Y - Rotation.Y));
+	}
 
 	public Vector3 GetMoveDirection()
 	{
@@ -180,18 +185,7 @@ public partial class Humanoid : RigidBody3D
 		return length > MinLadderGap;
 	}
 
-	public void Walk(Vector3 direction, float acceleration)
-	{
-		Vector3 target = direction * WalkSpeed;
-
-		Vector3 correctionVector = target - new Vector3(LinearVelocity.X, 0, LinearVelocity.Z);
-
-		float length = Math.Min(acceleration, 100 * correctionVector.Length());
-
-		correctionVector = correctionVector.Normalized() * length;
-		
-		ApplyCentralForce(correctionVector);
-	}
+	public float GetWalkSpeed() => WalkSpeed;
 
 	public void Jump()
 	{
@@ -210,29 +204,10 @@ public partial class Humanoid : RigidBody3D
 		SetAxisVelocity(directionVector * JumpPower);
 	}
 
-	public void RotateTo(Vector3 target)
+	public Vector3 GetPlayerHeading()
 	{
-		Vector3 otherRotation = AngularVelocity.RemoveAngularComponent(WorldBasis.Y);
-
-		if (target.Length() == 0)
-		{
-			AngularVelocity = otherRotation;
-			return;
-		}
-
 		Vector3 directionVector = PlayerZVector + PlayerYVector;
 		Plane plane = new Plane(Vector3.Up);
-		directionVector = plane.Project(directionVector);
-
-		float angle = directionVector.SignedAngleTo(target, Vector3.Up);
-		
-		SetAngularVelocity(otherRotation + WorldBasis.Y * angle * 10.0f);
-	}
-
-	public void SnapToCamera()
-	{
-		Vector3 currentRotation = Rotation;
-		currentRotation.Y = _camera.Rotation.Y;
-		Rotation = currentRotation;
+		return plane.Project(directionVector);
 	}
 }

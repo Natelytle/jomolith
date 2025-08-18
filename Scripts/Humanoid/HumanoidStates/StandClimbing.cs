@@ -5,9 +5,6 @@ namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
 public class StandClimbing(Humanoid player) : Balancing("StandClimbing", player)
 {
-    // Acceleration when dismounting this ladder
-    private const float Acceleration = 800f;
-
     public override void OnEnter()
     {
     }
@@ -36,16 +33,16 @@ public class StandClimbing(Humanoid player) : Balancing("StandClimbing", player)
         bool touchingGround = floorDistance < Humanoid.HipHeight + 0.05;
         
         Vector3 targetMovementVector = Player.GetMoveDirection();
+        float angle = targetMovementVector.AngleTo(Player.GetPlayerHeading());
+        bool isClimbDownAngle = angle > float.DegreesToRadians(100f);
 
-        Climb(targetMovementVector);
-        
-        if (Player.RotationLocked)
-            Player.SnapToCamera();
+        if (!isClimbDownAngle)
+            Climb(targetMovementVector);
         
         // Transition to other states
-        if (!Player.IsClimbing())
+        if (!Player.IsClimbing() || isClimbDownAngle)
         {
-            InvokeFinished(this, "Standing");
+            InvokeFinished(this, "Running");
         }
         else if (!touchingGround)
         {
@@ -60,26 +57,10 @@ public class StandClimbing(Humanoid player) : Balancing("StandClimbing", player)
     
     private void Climb(Vector3 target)
     {
-        Vector3 velocityVector = new Vector3(Player.LinearVelocity.X, 0, Player.LinearVelocity.Z);
+        Vector3 velocityVector = new(Player.LinearVelocity.X, 0, Player.LinearVelocity.Z);
 
         if (target.Length() > 0)
         {
-            float angle = target.AngleTo(Player.PlayerZVector);
-
-            bool isClimbDownAngle = angle > float.DegreesToRadians(100f);
-
-            if (isClimbDownAngle)
-            {
-                Player.Walk(target, Acceleration);
-
-                if (!Player.RotationLocked)
-                {
-                    Player.RotateTo(target);
-                }
-
-                return;
-            }
-
             velocityVector += Humanoid.WorldYVector * 16;
         }
 

@@ -2,12 +2,12 @@ using Godot;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Standing(Humanoid player) : Balancing("Standing", player)
+public class Running(Humanoid player) 
+    : Moving("Running", player)
 {
-    private const float Acceleration = 800f;
-
     public override void OnEnter()
     {
+        Player.GetPhysicsMaterialOverride().Friction = 0.3f;
     }
 
     public override void OnExit()
@@ -33,15 +33,6 @@ public class Standing(Humanoid player) : Balancing("Standing", player)
             Player.ApplyCentralForce(-Player.GetGravity() * Player.Mass);
             Player.SetAxisVelocity(Player.PlayerYVector * (Humanoid.HipHeight - floorDistance) * 20);
         }
-
-        Vector3 targetMovementVector = Player.GetMoveDirection();
-        
-        Player.Walk(targetMovementVector, Acceleration);
-        
-        if (Player.RotationLocked)
-            Player.SnapToCamera();
-        else
-            Player.RotateTo(targetMovementVector);
         
         // Transition to other states
         if (Player.IsClimbing())
