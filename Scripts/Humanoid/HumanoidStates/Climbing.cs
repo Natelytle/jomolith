@@ -3,7 +3,7 @@ using Godot;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public partial class Climbing(Humanoid player) : HumanoidState("Climbing", player)
+public class Climbing(Humanoid player) : Balancing("Climbing", player)
 {
     public override void OnEnter()
     {
@@ -19,7 +19,7 @@ public partial class Climbing(Humanoid player) : HumanoidState("Climbing", playe
 
     public override void PhysicsProcess(double delta)
     {
-        Player.ApplyUprightForce();
+        base.PhysicsProcess(delta);
 
         // Counteract gravity and adjust horizontal speed to 0.
         Player.ApplyCentralForce(-Player.GetGravity() * Player.Mass);
@@ -42,16 +42,16 @@ public partial class Climbing(Humanoid player) : HumanoidState("Climbing", playe
         // Transition to other states
         if (!Player.IsClimbing())
         {
-            EmitSignalFinished(this, "Falling");
+            InvokeFinished(this, "Falling");
         }
         else if (touchingGround)
         {
-            EmitSignalFinished(this, "StandClimbing");
+            InvokeFinished(this, "StandClimbing");
         }
         else if (Input.IsActionPressed("jump"))
         {
             Player.LadderJump();
-            EmitSignalFinished(this, "Falling");
+            InvokeFinished(this, "Falling");
         }
     }
 

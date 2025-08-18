@@ -2,10 +2,10 @@ using Godot;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public partial class Coyote(Humanoid player) : HumanoidState("Coyote", player)
+public class Coyote(Humanoid player) : Balancing("Coyote", player, 5000f, 50f)
 {
     private const float Acceleration = 150f;
-    private const double CoyoteTime = 0.1d; 
+    private const double CoyoteTime = 0.125d; 
 
     private double _coyoteTimer;
 
@@ -24,7 +24,7 @@ public partial class Coyote(Humanoid player) : HumanoidState("Coyote", player)
 
     public override void PhysicsProcess(double delta)
     {
-        Player.ApplyUprightForce();
+        base.PhysicsProcess(delta);
 
         float floorDistance = Player.GetFloorDistance();
 
@@ -52,20 +52,20 @@ public partial class Coyote(Humanoid player) : HumanoidState("Coyote", player)
         // Transition to other states
         if (Player.IsClimbing())
         {
-            EmitSignalFinished(this, "Climbing");
+            InvokeFinished(this, "Climbing");
         }
         else if (touchingGround)
         {
-            EmitSignalFinished(this, "Standing");
+            InvokeFinished(this, "Standing");
         }
         else if (_coyoteTimer > CoyoteTime)
         {
-            EmitSignalFinished(this, "Falling");
+            InvokeFinished(this, "Falling");
         }
         else if (Input.IsActionPressed("jump"))
         {
             Player.Jump();
-            EmitSignalFinished(this, "Falling");
+            InvokeFinished(this, "Falling");
         }
     }
 }

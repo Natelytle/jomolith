@@ -3,7 +3,7 @@ using Godot;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public partial class StandClimbing(Humanoid player) : HumanoidState("StandClimbing", player)
+public class StandClimbing(Humanoid player) : Balancing("StandClimbing", player)
 {
     // Acceleration when dismounting this ladder
     private const float Acceleration = 800f;
@@ -21,12 +21,12 @@ public partial class StandClimbing(Humanoid player) : HumanoidState("StandClimbi
     }
 
     public override void PhysicsProcess(double delta)
-    {
-        Player.ApplyUprightForce();
+    { 
+        base.PhysicsProcess(delta);
         
         // Counteract gravity and adjust horizontal speed to 0.
         Player.ApplyCentralForce(-Player.GetGravity() * Player.Mass);
-        Vector3 correctionVector = new Vector3(-Player.LinearVelocity.X, 0, -Player.LinearVelocity.Z);
+        Vector3 correctionVector = new(-Player.LinearVelocity.X, 0, -Player.LinearVelocity.Z);
         float adjustmentForce = Math.Min(correctionVector.Length() * 50f, 14000f);
         Player.ApplyCentralForce(correctionVector.Normalized() * adjustmentForce);
 
@@ -45,16 +45,16 @@ public partial class StandClimbing(Humanoid player) : HumanoidState("StandClimbi
         // Transition to other states
         if (!Player.IsClimbing())
         {
-            EmitSignalFinished(this, "Standing");
+            InvokeFinished(this, "Standing");
         }
         else if (!touchingGround)
         {
-            EmitSignalFinished(this, "Climbing");
+            InvokeFinished(this, "Climbing");
         }
         else if (Input.IsActionPressed("jump"))
         {
             Player.LadderJump();
-            EmitSignalFinished(this, "Falling");
+            InvokeFinished(this, "Falling");
         }
     }
     

@@ -2,7 +2,7 @@ using Godot;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public partial class Standing(Humanoid player) : HumanoidState("Standing", player)
+public class Standing(Humanoid player) : Balancing("Standing", player)
 {
     private const float Acceleration = 800f;
 
@@ -20,7 +20,7 @@ public partial class Standing(Humanoid player) : HumanoidState("Standing", playe
 
     public override void PhysicsProcess(double delta)
     {
-        Player.ApplyUprightForce();
+        base.PhysicsProcess(delta);
 
         float floorDistance = Player.GetFloorDistance();
 
@@ -46,16 +46,16 @@ public partial class Standing(Humanoid player) : HumanoidState("Standing", playe
         // Transition to other states
         if (Player.IsClimbing())
         {
-            EmitSignalFinished(this, "StandClimbing");
+            InvokeFinished(this, "StandClimbing");
         }
         else if (Input.IsActionPressed("jump"))
         {
             Player.Jump();
-            EmitSignalFinished(this, "Falling");
+            InvokeFinished(this, "Falling");
         }
         else if (!touchingGround)
         {
-            EmitSignalFinished(this, "Coyote");
+            InvokeFinished(this, "Coyote");
         }
     }
 }

@@ -2,7 +2,7 @@ using Godot;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public partial class Falling(Humanoid player) : HumanoidState("Falling", player)
+public class Falling(Humanoid player) : Balancing("Falling", player, 5000f, 50f)
 {
     private const float Acceleration = 150f;
 
@@ -20,7 +20,7 @@ public partial class Falling(Humanoid player) : HumanoidState("Falling", player)
 
     public override void PhysicsProcess(double delta)
     {
-        Player.ApplyUprightForce();
+        base.PhysicsProcess(delta);
 
         float floorDistance = Player.GetFloorDistance();
         
@@ -48,11 +48,11 @@ public partial class Falling(Humanoid player) : HumanoidState("Falling", player)
         // Transition to other states
         if (Player.IsClimbing() && backwardsVelocity < 0.5)
         {
-            EmitSignalFinished(this, "Climbing");
+            InvokeFinished(this, "Climbing");
         }
         else if (touchingGround)
         {
-            EmitSignalFinished(this, "Standing");
+            InvokeFinished(this, "Standing");
         }
     }
 }

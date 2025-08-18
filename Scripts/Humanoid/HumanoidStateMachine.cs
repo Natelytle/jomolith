@@ -6,26 +6,22 @@ namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 public partial class HumanoidStateMachine : Node
 {
     [Export]
-    public HumanoidState InitialState { get; set; }
+    public string InitialState { get; set; }
 
     private HumanoidState _currentState;
-    private Dictionary<string, HumanoidState> _statesDictionary;
+    private Dictionary<string, HumanoidState> _statesDictionary = new();
+
+    public void AddState(HumanoidState state)
+    {
+        _statesDictionary.Add(state.StateName.ToLower(), state);
+
+        state.Finished += OnStateFinished;
+    }
 
     public override void _Ready()
     {
-        _statesDictionary = new Dictionary<string, HumanoidState>();
-
-        foreach (Node child in GetChildren())
-        {
-            if (child is not HumanoidState state) 
-                continue;
-
-            _statesDictionary.Add(state.StateName.ToLower(), state);
-            state.Finished += OnStateFinished;
-        }
-
         if (InitialState is not null)
-            _currentState = InitialState;
+            _currentState = _statesDictionary[InitialState.ToLower()];
     }
 
     public override void _Process(double delta)

@@ -112,24 +112,21 @@ public partial class Humanoid : RigidBody3D
 		
 		// State machine
 		_stateMachine = new HumanoidStateMachine();
+		_stateMachine.AddState(new Standing(this));
+		_stateMachine.AddState(new Falling(this));
+		_stateMachine.AddState(new Coyote(this));
+		_stateMachine.AddState(new Climbing(this));
+		_stateMachine.AddState(new StandClimbing(this));
 
-		HumanoidState falling = new Falling(this);
-
-		_stateMachine.AddChild(falling);
-		_stateMachine.AddChild(new Standing(this));
-		_stateMachine.AddChild(new Coyote(this));
-		_stateMachine.AddChild(new Climbing(this));
-		_stateMachine.AddChild(new StandClimbing(this));
-
-		_stateMachine.InitialState = falling; 
+		_stateMachine.InitialState = "Falling"; 
 		
 		AddChild(_stateMachine);
 	}
 
 	// Movement info
-	private const float WalkSpeed = 16f;
-	private const float JumpPower = 55f;
-	private const float MaxSlope = 89f;
+	private const float WalkSpeed = 16.0f;
+	private const float JumpPower = 55.0f;
+	private const float MaxSlope = 89.0f;
 
 	public Vector3 GetMoveDirection()
 	{
@@ -237,14 +234,5 @@ public partial class Humanoid : RigidBody3D
 		Vector3 currentRotation = Rotation;
 		currentRotation.Y = _camera.Rotation.Y;
 		Rotation = currentRotation;
-	}
-	
-	public void ApplyUprightForce()
-	{
-		Vector3 cross = PlayerYVector.Cross(WorldYVector).Normalized();
-
-		float angle = PlayerYVector.AngleTo(WorldYVector);
-		
-		SetAngularVelocity(cross * angle * 50);
 	}
 }
