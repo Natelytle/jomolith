@@ -1,7 +1,7 @@
-[gd_scene load_steps=15 format=3 uid="uid://bdcgss0ixl0sd"]
+[gd_scene load_steps=14 format=3 uid="uid://bdcgss0ixl0sd"]
 
 [ext_resource type="Texture2D" uid="uid://btoef73roaw3p" path="res://Assets/stud.png" id="1_jjgbg"]
-[ext_resource type="Script" uid="uid://b53vpvpu1v2s4" path="res://Scripts/Humanoid/Humanoid.cs" id="6_21xkr"]
+[ext_resource type="PackedScene" uid="uid://cytdfcw1muito" path="res://Scenes/kinetic_humanoid.tscn" id="2_bo1nx"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_7dm0k"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -55,9 +55,6 @@ uv1_triplanar = true
 albedo_texture = ExtResource("1_jjgbg")
 uv1_offset = Vector3(0.5, 0.5, 0.5)
 uv1_triplanar = true
-
-[sub_resource type="BoxMesh" id="BoxMesh_21xkr"]
-size = Vector3(2, 5, 1)
 
 [node name="Main" type="Node3D"]
 
@@ -292,9 +289,5 @@ use_collision = true
 size = Vector3(3, 2, 3)
 material = SubResource("StandardMaterial3D_jjvhh")
 
-[node name="Humanoid" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 2.5, 0)
-script = ExtResource("6_21xkr")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Humanoid"]
-mesh = SubResource("BoxMesh_21xkr")
+[node name="KineticHumanoid" parent="." instance=ExtResource("2_bo1nx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

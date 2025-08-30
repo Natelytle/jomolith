@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://b7pgrnnnbu20a"]
+
+[ext_resource type="Script" uid="uid://b53vpvpu1v2s4" path="res://Scripts/Humanoid/Humanoid.cs" id="1_syv1w"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_21xkr"]
+size = Vector3(2, 5, 1)
+
+[node name="Humanoid" type="RigidBody3D"]
+script = ExtResource("1_syv1w")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_21xkr")
