@@ -1,7 +1,8 @@
-[gd_scene load_steps=14 format=3 uid="uid://bdcgss0ixl0sd"]
+[gd_scene load_steps=15 format=3 uid="uid://bdcgss0ixl0sd"]
 
 [ext_resource type="Texture2D" uid="uid://btoef73roaw3p" path="res://Assets/stud.png" id="1_jjgbg"]
 [ext_resource type="PackedScene" uid="uid://cytdfcw1muito" path="res://Scenes/kinetic_humanoid.tscn" id="2_bo1nx"]
+[ext_resource type="PackedScene" uid="uid://djx5lh17ybohc" path="res://Scenes/humanoid_camera.tscn" id="3_8gbba"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_7dm0k"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -291,3 +292,7 @@ material = SubResource("StandardMaterial3D_jjvhh")
 
 [node name="KineticHumanoid" parent="." instance=ExtResource("2_bo1nx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+motion_mode = 1
+
+[node name="HumanoidCamera" parent="." node_paths=PackedStringArray("Subject") instance=ExtResource("3_8gbba")]
+Subject = NodePath("../KineticHumanoid")

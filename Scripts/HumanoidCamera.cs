@@ -13,44 +13,49 @@ public partial class HumanoidCamera : Node
     [Export] public float MouseSensitivity { get; set; } = 0.68f;
     private Vector2 _mousePixelsToUnits = new(0.002f * float.Pi, 0.0015f * float.Pi);
 
-    [Export] public KineticHumanoid.KineticHumanoid Subject { get; set; }
+    [Export] public CharacterRigidBody Subject { get; set; }
 
     private bool _firstPerson;
     private bool _shiftLock;
     public bool CameraLocked => _firstPerson || _shiftLock;
-    public Vector3 Rotation => CameraAnchor.Rotation;
+    public Vector3 Rotation => _cameraAnchor.Rotation;
 
     private bool _rightClick;
 
-    private Node3D CameraAnchor => (Node3D)GetNode("CameraAnchor");
-    private SpringArm3D CameraSpringArm => (SpringArm3D)GetNode("CameraAnchor/CameraSpringarm");
-    private Camera3D Camera => (Camera3D)GetNode("CameraAnchor/CameraSpringarm/Camera3D");
-    
-    public HumanoidCamera()
-    {
-        CameraSpringArm.SpringLength = _currentDistance;
 
-        Camera.Current = true;
-        Camera.Fov = 70;
-    }
+    private Node3D _cameraAnchor;
+    private SpringArm3D _cameraSpringArm;
+    private Camera3D _camera;
     
     private float _currentDistance = 12.5f;
     private float _horizontalOffset;
+
+    public override void _Ready()
+    {
+        _cameraAnchor = (Node3D)GetNode("CameraAnchor");
+        _cameraSpringArm = (SpringArm3D)GetNode("CameraAnchor/CameraSpringarm");
+        _camera = (Camera3D)GetNode("CameraAnchor/CameraSpringarm/Camera3D");
+        
+        _cameraSpringArm.SpringLength = _currentDistance;
+
+        _camera.Current = true;
+        _camera.Fov = 70;
+    }
 
     public override void _Process(double delta)
     {
         // Move the camera to the head of our subject.
         if (Subject is not null)
         {
-            CameraAnchor.GlobalPosition = ((Node3D)Subject.GetNode("HumanoidCameraPosition")).GlobalPosition;
+            _cameraAnchor.GlobalPosition = ((Node3D)Subject.GetNode("CameraPosition")).GlobalPosition;
         }
 
-        CameraSpringArm.SpringLength = Single.Min((CameraAnchor.GlobalPosition - Camera.GlobalPosition).Length(),
-            CameraSpringArm.SpringLength);
+        _cameraSpringArm.SpringLength = float.Min((_cameraAnchor.GlobalPosition - _camera.GlobalPosition).Length(),
+            _cameraSpringArm.SpringLength);
 
         // Update spring arm length
         float amount = 1 - float.Pow(0.5f, (float)delta * 30);
-        CameraSpringArm.SpringLength = float.Lerp(CameraSpringArm.SpringLength, _currentDistance, amount);
+        _cameraSpringArm.SpringLength = float.Lerp(_cameraSpringArm.SpringLength, _currentDistance, amount);
     }
     
     public override void _UnhandledInput(InputEvent e)
@@ -115,11 +120,6 @@ public partial class HumanoidCamera : Node
         }
     }
 
-    private void UpdateSpringLength()
-    {
-        
-    }
-
     private void EnterFirstPerson()
     {
         _firstPerson = true;
@@ -168,12 +168,12 @@ public partial class HumanoidCamera : Node
     {
         Vector2 moveVector = motion.Relative * _mousePixelsToUnits * MouseSensitivity;
 
-        float yRotation = CameraAnchor.Rotation.Y - moveVector.X;
-        float xRotation = CameraAnchor.Rotation.X - moveVector.Y;
+        float yRotation = _cameraAnchor.Rotation.Y - moveVector.X;
+        float xRotation = _cameraAnchor.Rotation.X - moveVector.Y;
 
         // Clamp to 80 degrees.
         xRotation = Math.Clamp(xRotation, float.DegreesToRadians(-80), float.DegreesToRadians(80));
         
-        CameraAnchor.SetRotation(new Vector3(xRotation, yRotation, 0f));
+        _cameraAnchor.SetRotation(new Vector3(xRotation, yRotation, 0f));
     }
 }
