@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://bdcgss0ixl0sd"]
+[gd_scene load_steps=15 format=3 uid="uid://bdcgss0ixl0sd"]
 
 [ext_resource type="Texture2D" uid="uid://btoef73roaw3p" path="res://Assets/stud.png" id="1_jjgbg"]
 [ext_resource type="Script" uid="uid://b53vpvpu1v2s4" path="res://Scripts/Humanoid/Humanoid.cs" id="6_21xkr"]
@@ -47,6 +47,11 @@ uv1_offset = Vector3(0.5, 0.5, 0.5)
 uv1_triplanar = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ynf5e"]
+albedo_texture = ExtResource("1_jjgbg")
+uv1_offset = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8gbba"]
 albedo_texture = ExtResource("1_jjgbg")
 uv1_offset = Vector3(0.5, 0.5, 0.5)
 uv1_triplanar = true
@@ -166,6 +171,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 4.5, -6.5)
 use_collision = true
 size = Vector3(5, 1, 5)
 material = SubResource("StandardMaterial3D_ynf5e")
+
+[node name="CSGBox3D28" type="CSGBox3D" parent="Stage/World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 4.5, -24.5)
+use_collision = true
+size = Vector3(5, 1, 5)
+material = SubResource("StandardMaterial3D_ynf5e")
+
+[node name="CSGBox3D27" type="CSGBox3D" parent="Stage/World"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, -7.5, 8.375, -15.4845)
+use_collision = true
+size = Vector3(0.2, 1, 16.5)
+material = SubResource("StandardMaterial3D_8gbba")
 
 [node name="CSGBox3D11" type="CSGBox3D" parent="Stage/World"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.5, 1.5, -6.5)

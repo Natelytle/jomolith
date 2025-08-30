@@ -39,7 +39,7 @@ public class Falling(Humanoid player)
         // Transition to other states
         if (Player.IsClimbing() && backwardsVelocity < 0.5)
         {
-            InvokeFinished(this, "Climbing");
+            InvokeFinished(this, touchingGround ? "StandClimbing" : "Climbing");
         }
         else if (touchingGround)
         {

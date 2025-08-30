@@ -33,26 +33,15 @@ public class Moving(string stateName, Humanoid player, float accel = 800f, float
         
         Player.ApplyCentralForce(correctionVector);
 
-        Vector3 rotationTarget = target;
-
-        // We don't actually want to rotate when 
-        if (Player.RotationLocked)
+        if (!Player.RotationLocked)
         {
-            rotationTarget = Player.GetPlayerHeading();
-        }
-        
-        Vector3 otherRotation = Player.AngularVelocity.RemoveAngularComponent(Humanoid.WorldBasis.Y);
+            Vector3 playerHeading = Player.GetPlayerHeading();
+            float angle = playerHeading.SignedAngleTo(target, Vector3.Up);
+            float desiredRotationalVelocity = 10.0f * angle;
 
-        if (target.Length() == 0)
-        {
-            Player.SetAngularVelocity(otherRotation);
-            return;
-        }
-
-        Vector3 playerHeading = Player.GetPlayerHeading();
-        float angle = playerHeading.AngleTo(rotationTarget);
-        Vector3 cross = playerHeading.Cross(rotationTarget).Normalized();
+            float desiredTorque = 175f * Humanoid.TempInertia.Y * (desiredRotationalVelocity - Player.AngularVelocity.Dot(Vector3.Up));
 		
-        Player.SetAngularVelocity(otherRotation + cross * angle * 10.0f);
+            Player.ApplyTorque(Vector3.Up * desiredTorque);
+        }
     }
 }

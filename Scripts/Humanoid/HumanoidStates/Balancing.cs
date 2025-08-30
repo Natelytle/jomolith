@@ -7,6 +7,11 @@ public class Balancing : HumanoidState
     private readonly float _kP;
     private readonly float _kD;
 
+    private int _tick;
+    private Vector3 _lastTorque;
+
+    private const int BalanceRate = 1;
+
     protected Balancing(string stateName, Humanoid player, float kP = 2250.0f, float kD = 50.0f)
         : base(stateName, player)
     {
@@ -28,6 +33,14 @@ public class Balancing : HumanoidState
 
     public override void PhysicsProcess(double delta)
     {
+        if (_tick > 0)
+        {
+            _tick--;
+            
+            Player.ApplyTorque(_lastTorque);
+            return;
+        }
+        
         Vector3 worldUp = Vector3.Up;
         Vector3 playerUp = Player.GlobalTransform.Basis.Y;
 
@@ -39,13 +52,14 @@ public class Balancing : HumanoidState
         Vector3 tiltLocal = tiltWorld * rootBasis;
         Vector3 angVelLocal = angVelWorld * rootBasis;
 
-        Vector3 inertia = new(2.16f, 0.41f, 2.41f);
+        Vector3 controlTorqueLocal = -_kP * (Humanoid.TempInertia * tiltLocal);
+        Vector3 torqueLocal = controlTorqueLocal - _kD * (Humanoid.TempInertia * angVelLocal);
 
-        Vector3 controlTorqueLocal = -_kP * (inertia * tiltLocal);
-        Vector3 torqueLocal = controlTorqueLocal - _kD * (inertia * angVelLocal);
+        Vector3 appliedTorque = rootBasis * torqueLocal;
 
-        Vector3 torqueWorld = rootBasis * torqueLocal;
-
-        Player.ApplyTorque(torqueWorld);
+        Player.ApplyTorque(appliedTorque);
+        _lastTorque = appliedTorque;
+                    
+        _tick = BalanceRate;
     }
 }

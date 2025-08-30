@@ -26,6 +26,7 @@ public partial class Humanoid : RigidBody3D
 	private const float TorsoHeight = 3.0f;
 	public const float HipHeight = 2.0f;
 	private const float MaxStairLength = 1.95f;
+	private const float LadderCheckerGap = 3.5f;
 	private const float MaxLadderHeight = 2.5f;
 	private const float MinLadderGap = 0.05f;
 	private const float HitboxHeight = 3.0f;
@@ -49,7 +50,7 @@ public partial class Humanoid : RigidBody3D
 	public override void _Ready()
 	{
 		CanSleep = false;
-		ContinuousCd = true;
+		SetUseContinuousCollisionDetection(true);
 
 		PhysicsMaterial physicsMaterial = new();
 		SetPhysicsMaterialOverride(physicsMaterial);
@@ -88,7 +89,7 @@ public partial class Humanoid : RigidBody3D
 		Vector3 climbRayYOffset = -PlayerYVector * (HipHeight + TorsoHeight) / 2.0f + PlayerYVector * 0.5f;
 
 		_climbCheckerUp.Position = climbRayZOffset + climbRayYOffset;
-		_climbCheckerUp.TargetPosition = PlayerYVector * MaxLadderHeight;
+		_climbCheckerUp.TargetPosition = PlayerYVector * LadderCheckerGap;
 		AddChild(_climbCheckerUp);
 
 		// this one is just flipped
@@ -126,11 +127,16 @@ public partial class Humanoid : RigidBody3D
 	private const float WalkSpeed = 16.0f;
 	private const float JumpPower = 55.0f;
 	private const float MaxSlope = 89.0f;
+	public static readonly Vector3 TempInertia = new(2.16f, 0.41f, 2.41f);
 
 	public override void _IntegrateForces(PhysicsDirectBodyState3D state)
 	{
 		if (RotationLocked)
-			state.SetTransform(Transform.RotatedLocal(WorldYVector, _camera.Rotation.Y - Rotation.Y));
+		{
+			Vector3 origin = state.Transform.Origin;
+			Basis basis = Basis.Identity.Rotated(Vector3.Up, _camera.Rotation.Y);
+			state.Transform = new Transform3D(basis, origin);
+		}
 	}
 
 	public Vector3 GetMoveDirection()
@@ -182,7 +188,7 @@ public partial class Humanoid : RigidBody3D
 
 		float length = (_climbCheckerUp.GetCollisionPoint() - _climbCheckerDown.GetCollisionPoint()).Length();
 
-		return length > MinLadderGap;
+		return length is > MinLadderGap and < MaxLadderHeight;
 	}
 
 	public float GetWalkSpeed() => WalkSpeed;
@@ -194,10 +200,7 @@ public partial class Humanoid : RigidBody3D
 
 	public void LadderJump()
 	{
-		Vector3 backwardsVector = -PlayerZVector;
-		Plane plane = new Plane(Vector3.Up);
-		backwardsVector = plane.Project(backwardsVector);
-		backwardsVector = backwardsVector.Normalized();
+		Vector3 backwardsVector = -GetPlayerHeading();
 
 		Vector3 directionVector = (WorldYVector + backwardsVector).Normalized();
 
@@ -207,7 +210,7 @@ public partial class Humanoid : RigidBody3D
 	public Vector3 GetPlayerHeading()
 	{
 		Vector3 directionVector = PlayerZVector + PlayerYVector;
-		Plane plane = new Plane(Vector3.Up);
-		return plane.Project(directionVector);
+		Plane plane = new(Vector3.Up);
+		return plane.Project(directionVector).Normalized();
 	}
 }
