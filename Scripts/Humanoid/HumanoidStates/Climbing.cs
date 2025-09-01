@@ -63,7 +63,7 @@ public class Climbing(Humanoid player)
 
             bool isClimbDownAngle = angle > float.DegreesToRadians(100f);
 
-            velocityVector += isClimbDownAngle ? Humanoid.WorldYVector * -16 : Humanoid.WorldYVector * 16;
+            velocityVector += isClimbDownAngle ? Humanoid.WorldYVector * -Player.GetWalkSpeed() * 0.7f : Humanoid.WorldYVector * Player.GetWalkSpeed() * 0.7f;
         }
 		
         Player.SetLinearVelocity(velocityVector);

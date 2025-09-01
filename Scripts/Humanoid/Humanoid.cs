@@ -17,7 +17,6 @@ public partial class Humanoid : RigidBody3D
 	private RayCast3D[][] _groundCheckers;
 	private RayCast3D _climbCheckerUp;
 	private RayCast3D _climbCheckerDown;
-	private CollisionShape3D _collisionShape;
 	private HumanoidCamera _camera;
 	private HumanoidStateMachine _stateMachine;
 
@@ -49,12 +48,6 @@ public partial class Humanoid : RigidBody3D
 
 	public override void _Ready()
 	{
-		CanSleep = false;
-		SetUseContinuousCollisionDetection(true);
-
-		PhysicsMaterial physicsMaterial = new();
-		SetPhysicsMaterialOverride(physicsMaterial);
-
 		_groundCheckers = new RayCast3D[GroundCheckerCountX][];
 
 		for (int x = 0; x < GroundCheckerCountX; x++) 
@@ -97,18 +90,6 @@ public partial class Humanoid : RigidBody3D
 		_climbCheckerDown.Position = _climbCheckerUp.Position + _climbCheckerUp.TargetPosition;
 		_climbCheckerDown.TargetPosition = -_climbCheckerUp.TargetPosition;
 		AddChild(_climbCheckerDown);
-
-		_torsoCollisionBox = new BoxShape3D();
-		_torsoCollisionBox.Size = new Vector3(HitboxWidth, HitboxHeight, HitboxDepth);
-
-		_collisionShape = new CollisionShape3D();
-		_collisionShape.Shape = _torsoCollisionBox;
-		_collisionShape.Transform = new Transform3D(Basis.Identity, WorldYVector * HipHeight / 2.0f);
-		AddChild(_collisionShape);
-
-		_camera = new HumanoidCamera();
-		_camera.Subject = this;
-		AddChild(_camera);
 		
 		// State machine
 		_stateMachine = new HumanoidStateMachine();
@@ -121,6 +102,8 @@ public partial class Humanoid : RigidBody3D
 		_stateMachine.InitialState = "Falling"; 
 		
 		AddChild(_stateMachine);
+
+		_camera = (HumanoidCamera)GetNode("HumanoidCamera");
 	}
 
 	// Movement info
@@ -129,13 +112,15 @@ public partial class Humanoid : RigidBody3D
 	private const float MaxSlope = 89.0f;
 	public static readonly Vector3 TempInertia = new(2.16f, 0.41f, 2.41f);
 
-	public override void _IntegrateForces(PhysicsDirectBodyState3D state)
+	public override void _PhysicsProcess(double delta)
 	{
+		base._PhysicsProcess(delta);
+
 		if (RotationLocked)
 		{
-			Vector3 origin = state.Transform.Origin;
+			Vector3 origin = Transform.Origin;
 			Basis basis = Basis.Identity.Rotated(Vector3.Up, _camera.Rotation.Y);
-			state.Transform = new Transform3D(basis, origin);
+			Transform = new Transform3D(basis, origin);
 		}
 	}
 
@@ -188,7 +173,7 @@ public partial class Humanoid : RigidBody3D
 
 		float length = (_climbCheckerUp.GetCollisionPoint() - _climbCheckerDown.GetCollisionPoint()).Length();
 
-		return length is > MinLadderGap and < MaxLadderHeight;
+		return length is > MinLadderGap; // and < MaxLadderHeight;
 	}
 
 	public float GetWalkSpeed() => WalkSpeed;

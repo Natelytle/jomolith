@@ -13,7 +13,8 @@ public partial class HumanoidCamera : Node
     [Export] public float MouseSensitivity { get; set; } = 0.68f;
     private Vector2 _mousePixelsToUnits = new(0.002f * float.Pi, 0.0015f * float.Pi);
 
-    [Export] public CharacterRigidBody Subject { get; set; }
+    [Export] public Node3D DefaultSubject { get; set; }
+    private Node3D _subject;
 
     private bool _firstPerson;
     private bool _shiftLock;
@@ -32,6 +33,9 @@ public partial class HumanoidCamera : Node
 
     public override void _Ready()
     {
+        if (DefaultSubject is not null)
+            _subject = DefaultSubject;
+
         _cameraAnchor = (Node3D)GetNode("CameraAnchor");
         _cameraSpringArm = (SpringArm3D)GetNode("CameraAnchor/CameraSpringarm");
         _camera = (Camera3D)GetNode("CameraAnchor/CameraSpringarm/Camera3D");
@@ -45,9 +49,10 @@ public partial class HumanoidCamera : Node
     public override void _Process(double delta)
     {
         // Move the camera to the head of our subject.
-        if (Subject is not null)
+        if (_subject is not null && _subject.HasNode("CameraPosition"))
         {
-            _cameraAnchor.GlobalPosition = ((Node3D)Subject.GetNode("CameraPosition")).GlobalPosition;
+            _cameraAnchor.GlobalPosition = ((Node3D)_subject.GetNode("CameraPosition")).GlobalPosition;
+            _cameraAnchor.GlobalPosition += _subject.GlobalBasis.X * _horizontalOffset;
         }
 
         _cameraSpringArm.SpringLength = float.Min((_cameraAnchor.GlobalPosition - _camera.GlobalPosition).Length(),

@@ -61,7 +61,7 @@ public class StandClimbing(Humanoid player) : Balancing("StandClimbing", player)
 
         if (target.Length() > 0)
         {
-            velocityVector += Humanoid.WorldYVector * 16;
+            velocityVector += Humanoid.WorldYVector * Player.GetWalkSpeed() * 0.7f;
         }
 
         Player.SetLinearVelocity(velocityVector);
