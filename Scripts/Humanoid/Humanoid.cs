@@ -43,8 +43,11 @@ public partial class Humanoid : RigidBody3D
 	public Vector3 PlayerYVector => Basis.Y;
 	public Vector3 PlayerZVector => -Basis.Z;
 	private Basis PlayerBasis => Basis;
-
+	
 	public bool RotationLocked => _camera.CameraLocked;
+	public Vector3 CameraRotation => _camera.Rotation;
+	public float CameraZoom => _camera.Zoom;
+	public HumanoidState State => _stateMachine.CurrentState;
 
 	public override void _Ready()
 	{

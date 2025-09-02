@@ -16,13 +16,13 @@ public abstract class HumanoidState(string stateName, Humanoid player)
     public abstract void Process(double delta);
     public abstract void PhysicsProcess(double delta);
 
-    protected void InvokeFinished(HumanoidState state, HumanoidStateMachine.StateType stateType)
+    protected void InvokeFinished(HumanoidState state, Scripts.Humanoid.HumanoidStateMachine.StateType stateType)
     {
         Finished?.Invoke(state, stateType);
     }
 
     public event FinishedEventHandler Finished;
-    public delegate void FinishedEventHandler(HumanoidState state, HumanoidStateMachine.StateType stateType);
+    public delegate void FinishedEventHandler(HumanoidState state, Scripts.Humanoid.HumanoidStateMachine.StateType stateType);
     
     protected enum EventType 
     {

@@ -1,5 +1,5 @@
 using Godot;
-using static Jomolith.Scripts.Humanoid.HumanoidStates.HumanoidStateMachine;
+using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 

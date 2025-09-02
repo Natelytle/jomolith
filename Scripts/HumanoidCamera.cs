@@ -20,6 +20,7 @@ public partial class HumanoidCamera : Node
     private bool _shiftLock;
     public bool CameraLocked => _firstPerson || _shiftLock;
     public Vector3 Rotation => _cameraAnchor.Rotation;
+    public float Zoom => _currentDistance;
 
     private bool _rightClick;
 

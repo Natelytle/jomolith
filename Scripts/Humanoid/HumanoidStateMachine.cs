@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
 using Godot;
+using Jomolith.Scripts.Humanoid.HumanoidStates;
 
-namespace Jomolith.Scripts.Humanoid.HumanoidStates;
+namespace Jomolith.Scripts.Humanoid;
 
 public partial class HumanoidStateMachine : Node
 {
@@ -12,7 +12,7 @@ public partial class HumanoidStateMachine : Node
     [Export]
     public Humanoid Player { get; set; }
 
-    private HumanoidState _currentState;
+    public HumanoidState CurrentState { get; private set; }
 
     public enum StateType
     {
@@ -62,22 +62,22 @@ public partial class HumanoidStateMachine : Node
 
     public override void _Ready()
     {
-        _currentState = GetState(InitialState);
+        CurrentState = GetState(InitialState);
     }
 
     public override void _Process(double delta)
     {
-        _currentState?.Process(delta);
+        CurrentState?.Process(delta);
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        _currentState?.PhysicsProcess(delta);
+        CurrentState?.PhysicsProcess(delta);
     }
 
     private void OnStateFinished(HumanoidState state, StateType newStateType)
     {
-        if (state != _currentState)
+        if (state != CurrentState)
             return;
 
         HumanoidState newState = GetState(newStateType);
@@ -85,10 +85,10 @@ public partial class HumanoidStateMachine : Node
         if (newState is null)
             return;
 
-        _currentState?.OnExit();
+        CurrentState?.OnExit();
 
         newState.OnEnter();
 
-        _currentState = newState;
+        CurrentState = newState;
     }
 }
