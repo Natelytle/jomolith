@@ -1,4 +1,5 @@
 using Godot;
+using static Jomolith.Scripts.Humanoid.HumanoidStates.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
@@ -35,18 +36,18 @@ public class Running(Humanoid player)
         }
         
         // Transition to other states
-        if (Player.IsClimbing())
+        if (ComputeEvent(EventType.FacingLadder))
         {
-            InvokeFinished(this, "StandClimbing");
+            InvokeFinished(this, StateType.StandClimbing);
         }
-        else if (Input.IsActionPressed("jump"))
+        else if (ComputeEvent(EventType.JumpCommand))
         {
             Player.Jump();
-            InvokeFinished(this, "Falling");
+            InvokeFinished(this, StateType.Falling);
         }
-        else if (!touchingGround)
+        else if (ComputeEvent(EventType.OffFloor))
         {
-            InvokeFinished(this, "Coyote");
+            InvokeFinished(this, StateType.Coyote);
         }
     }
 }

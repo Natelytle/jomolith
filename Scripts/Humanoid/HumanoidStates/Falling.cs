@@ -1,4 +1,5 @@
 using Godot;
+using static Jomolith.Scripts.Humanoid.HumanoidStates.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
@@ -36,14 +37,13 @@ public class Falling(Humanoid player)
 
         float backwardsVelocity = Player.GetLinearVelocity().Project(-Player.PlayerZVector).Length();
 
-        // Transition to other states
-        if (Player.IsClimbing() && backwardsVelocity < 0.5)
+        if (ComputeEvent(EventType.FacingLadder) && backwardsVelocity < 0.5)
         {
-            InvokeFinished(this, touchingGround ? "StandClimbing" : "Climbing");
+            InvokeFinished(this, ComputeEvent(EventType.OnFloor) ? StateType.StandClimbing : StateType.Climbing);
         }
-        else if (touchingGround)
+        else if (ComputeEvent(EventType.OnFloor))
         {
-            InvokeFinished(this, "Running");
+            InvokeFinished(this, StateType.Running);
         }
     }
 }

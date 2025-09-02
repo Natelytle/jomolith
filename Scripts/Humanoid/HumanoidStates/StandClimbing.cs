@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using static Jomolith.Scripts.Humanoid.HumanoidStates.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
@@ -28,9 +29,6 @@ public class StandClimbing(Humanoid player) : Balancing("StandClimbing", player)
         Player.ApplyCentralForce(correctionVector.Normalized() * adjustmentForce);
 
         float floorDistance = Player.GetFloorDistance();
-
-        // We are touching the ground if floor distance is the same as our leg length with a bit of margin for error.
-        bool touchingGround = floorDistance < Humanoid.HipHeight + 0.05;
         
         Vector3 targetMovementVector = Player.GetMoveDirection();
         float angle = targetMovementVector.AngleTo(Player.GetPlayerHeading());
@@ -40,18 +38,18 @@ public class StandClimbing(Humanoid player) : Balancing("StandClimbing", player)
             Climb(targetMovementVector);
         
         // Transition to other states
-        if (!Player.IsClimbing() || isClimbDownAngle)
+        if (ComputeEvent(EventType.AwayLadder) || isClimbDownAngle)
         {
-            InvokeFinished(this, "Running");
+            InvokeFinished(this, StateType.Running);
         }
-        else if (!touchingGround)
+        else if (ComputeEvent(EventType.OffFloor))
         {
-            InvokeFinished(this, "Climbing");
+            InvokeFinished(this, StateType.Climbing);
         }
-        else if (Input.IsActionPressed("jump"))
+        else if (ComputeEvent(EventType.JumpCommand))
         {
             Player.LadderJump();
-            InvokeFinished(this, "Falling");
+            InvokeFinished(this, StateType.Falling);
         }
     }
     

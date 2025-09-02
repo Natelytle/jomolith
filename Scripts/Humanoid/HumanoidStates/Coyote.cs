@@ -1,4 +1,5 @@
 using Godot;
+using static Jomolith.Scripts.Humanoid.HumanoidStates.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
@@ -7,11 +8,9 @@ public class Coyote(Humanoid player)
 {
     private const double CoyoteTime = 0.125d; 
 
-    private double _coyoteTimer;
-
     public override void OnEnter()
     {
-        _coyoteTimer = 0;
+        Timer = CoyoteTime;
         Player.GetPhysicsMaterialOverride().Friction = 0f;
     }
 
@@ -26,6 +25,8 @@ public class Coyote(Humanoid player)
     public override void PhysicsProcess(double delta)
     {
         base.PhysicsProcess(delta);
+        
+        Timer -= delta;
 
         float floorDistance = Player.GetFloorDistance();
 
@@ -38,26 +39,23 @@ public class Coyote(Humanoid player)
             float impactForce = -Player.LinearVelocity.Y * Player.Mass;
             Player.ApplyCentralImpulse(Humanoid.WorldYVector * impactForce);
         }
-        
-        _coyoteTimer += delta;
-        
-        // Transition to other states
-        if (Player.IsClimbing())
+
+        if (ComputeEvent(EventType.FacingLadder))
         {
-            InvokeFinished(this, "Climbing");
+            InvokeFinished(this, StateType.Climbing);
         }
-        else if (touchingGround)
+        else if (ComputeEvent(EventType.OnFloor))
         {
-            InvokeFinished(this, "Running");
+            InvokeFinished(this, StateType.Running);
         }
-        else if (_coyoteTimer > CoyoteTime)
+        else if (ComputeEvent(EventType.TimerUp))
         {
-            InvokeFinished(this, "Falling");
+            InvokeFinished(this, StateType.Falling);
         }
-        else if (Input.IsActionPressed("jump"))
+        else if (ComputeEvent(EventType.JumpCommand))
         {
             Player.Jump();
-            InvokeFinished(this, "Falling");
+            InvokeFinished(this, StateType.Falling);
         }
     }
 }

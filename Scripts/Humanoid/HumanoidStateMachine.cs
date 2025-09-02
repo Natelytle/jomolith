@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Godot;
 
@@ -6,22 +7,62 @@ namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 public partial class HumanoidStateMachine : Node
 {
     [Export]
-    public string InitialState { get; set; }
+    public StateType InitialState { get; set; }
+    
+    [Export]
+    public Humanoid Player { get; set; }
 
     private HumanoidState _currentState;
-    private Dictionary<string, HumanoidState> _statesDictionary = new();
 
-    public void AddState(HumanoidState state)
+    public enum StateType
     {
-        _statesDictionary.Add(state.StateName.ToLower(), state);
+        Running,
+        Coyote,
+        Falling,
+        Climbing,
+        StandClimbing,
+        Jumping,
+        Landed
+    }
 
-        state.Finished += OnStateFinished;
+    private HumanoidState GetState(StateType stateType)
+    {
+        HumanoidState state = null;
+        
+        switch (stateType)
+        {
+            case StateType.Running:
+                state = new Running(Player);
+                break;
+            case StateType.Coyote:
+                state = new Coyote(Player);
+                break;
+            case StateType.Falling:
+                state = new Falling(Player);
+                break;
+            case StateType.Climbing:
+                state = new Climbing(Player);
+                break;
+            case StateType.StandClimbing:
+                state = new StandClimbing(Player);
+                break;
+            case StateType.Jumping:
+                break;
+            case StateType.Landed:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
+        }
+
+        if (state != null)
+            state.Finished += OnStateFinished;
+        
+        return state;
     }
 
     public override void _Ready()
     {
-        if (InitialState is not null)
-            _currentState = _statesDictionary[InitialState.ToLower()];
+        _currentState = GetState(InitialState);
     }
 
     public override void _Process(double delta)
@@ -34,19 +75,18 @@ public partial class HumanoidStateMachine : Node
         _currentState?.PhysicsProcess(delta);
     }
 
-    private void OnStateFinished(HumanoidState state, string newStateName)
+    private void OnStateFinished(HumanoidState state, StateType newStateType)
     {
         if (state != _currentState)
             return;
 
-        HumanoidState newState = _statesDictionary[newStateName.ToLower()];
+        HumanoidState newState = GetState(newStateType);
 
         if (newState is null)
             return;
-        
-        if (_currentState is not null)
-            _currentState.OnExit();
-        
+
+        _currentState?.OnExit();
+
         newState.OnEnter();
 
         _currentState = newState;

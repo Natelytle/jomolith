@@ -93,13 +93,9 @@ public partial class Humanoid : RigidBody3D
 		
 		// State machine
 		_stateMachine = new HumanoidStateMachine();
-		_stateMachine.AddState(new Running(this));
-		_stateMachine.AddState(new Falling(this));
-		_stateMachine.AddState(new Coyote(this));
-		_stateMachine.AddState(new Climbing(this));
-		_stateMachine.AddState(new StandClimbing(this));
+		_stateMachine.Player = this;
 
-		_stateMachine.InitialState = "Falling"; 
+		_stateMachine.InitialState = HumanoidStateMachine.StateType.Falling; 
 		
 		AddChild(_stateMachine);
 
@@ -177,7 +173,7 @@ public partial class Humanoid : RigidBody3D
 		return medianLength;
 	}
 
-	public bool IsClimbing()
+	public bool FacingLadder()
 	{
 		if (!(_climbCheckerUp.IsColliding() && _climbCheckerDown.IsColliding()))
 			return false;
