@@ -31,7 +31,7 @@ public class Running(Humanoid player)
         {
             // Counteract gravity and adjust our legs to the floor.
             Player.ApplyCentralForce(-Player.GetGravity() * Player.Mass);
-            Player.SetAxisVelocity(Player.PlayerYVector * (Humanoid.HipHeight - floorDistance) * 20);
+            Player.SetAxisVelocity(Player.PlayerYVector * (Humanoid.HipHeight - floorDistance - 0.01f) * 20);
         }
         
         // Transition to other states

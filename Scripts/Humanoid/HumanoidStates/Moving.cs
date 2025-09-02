@@ -4,9 +4,11 @@ using Jomolith.Scripts.Utils;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Moving(string stateName, Humanoid player, float accel = 800f, float kP = 2250f, float kD = 50f)
+public class Moving(string stateName, Humanoid player, float maxAccel = 741.6f, float kP = 2250f, float kD = 50f)
     : Balancing(stateName, player, kP, kD)
 {
+    private const float Gain = 150f;
+
     public override void OnEnter()
     {
     }
@@ -27,7 +29,7 @@ public class Moving(string stateName, Humanoid player, float accel = 800f, float
         Vector3 target = targetMovementVector * Player.GetWalkSpeed();
         Vector3 correctionVector = target - new Vector3(Player.LinearVelocity.X, 0, Player.LinearVelocity.Z);
 
-        float length = Math.Min(accel, 100 * correctionVector.Length());
+        float length = Math.Min(maxAccel, Gain * correctionVector.Length());
 
         correctionVector = correctionVector.Normalized() * length;
         

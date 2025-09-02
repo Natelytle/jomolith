@@ -3,7 +3,7 @@ using Godot;
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
 public class Falling(Humanoid player)
-    : Moving("Falling", player, 150f, kP: 5000f)
+    : Moving("Falling", player, 143f, kP: 5000f)
 {
     public override void OnEnter()
     {

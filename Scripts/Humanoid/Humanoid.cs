@@ -111,16 +111,27 @@ public partial class Humanoid : RigidBody3D
 	private const float JumpPower = 55.0f;
 	private const float MaxSlope = 89.0f;
 	public static readonly Vector3 TempInertia = new(2.16f, 0.41f, 2.41f);
+	
+	// State information
+	private int _rotationLockTick;
 
 	public override void _PhysicsProcess(double delta)
 	{
-		base._PhysicsProcess(delta);
+		if (RotationLocked && _rotationLockTick <= 0)
+		{
+			AxisLockAngularY = true;
+			_rotationLockTick = 2;
+		}
+		else if (AxisLockAngularY)
+			AxisLockAngularY = false;
 
 		if (RotationLocked)
 		{
-			Vector3 origin = Transform.Origin;
-			Basis basis = Basis.Identity.Rotated(Vector3.Up, _camera.Rotation.Y);
-			Transform = new Transform3D(basis, origin);
+			Vector3 currentRotation = Rotation;
+			currentRotation.Y = _camera.Rotation.Y;
+			Rotation = currentRotation;
+
+			_rotationLockTick--;
 		}
 	}
 

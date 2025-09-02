@@ -3,7 +3,7 @@ using Godot;
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
 public class Coyote(Humanoid player)
-    : Moving("Coyote", player, 150f, kP: 5000f)
+    : Moving("Coyote", player, 143f, kP: 5000f)
 {
     private const double CoyoteTime = 0.125d; 
 
