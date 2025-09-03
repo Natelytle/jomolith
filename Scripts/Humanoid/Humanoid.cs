@@ -109,7 +109,6 @@ public partial class Humanoid : RigidBody3D
 	private const float WalkSpeed = 16.0f;
 	private const float JumpPower = 55.0f;
 	private const float MaxSlope = 89.0f;
-	public static readonly Vector3 TempInertia = new(2.16f, 0.41f, 2.41f);
 	
 	// State information
 	private int _rotationLockTick;

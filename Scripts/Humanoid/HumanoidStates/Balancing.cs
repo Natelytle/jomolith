@@ -2,22 +2,13 @@ using Godot;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Balancing : HumanoidState
+public class Balancing(string stateName, Humanoid player, float kP, float kD)
+    : HumanoidState(stateName, player)
 {
-    private readonly float _kP;
-    private readonly float _kD;
-
     private int _tick;
     private Vector3 _lastTorque;
 
-    private const int BalanceRate = 1;
-
-    protected Balancing(string stateName, Humanoid player, float kP = 2250.0f, float kD = 50.0f)
-        : base(stateName, player)
-    {
-        _kP = kP;
-        _kD = kD;
-    }
+    private const int BalanceRate = 2;
 
     public override void OnEnter()
     {
@@ -33,13 +24,13 @@ public class Balancing : HumanoidState
 
     public override void PhysicsProcess(double delta)
     {
-        if (_tick > 0)
-        {
-            _tick--;
-            
-            Player.ApplyTorque(_lastTorque);
-            return;
-        }
+        // if (_tick > 0)
+        // {
+        //     _tick--;
+        //     
+        //     Player.ApplyTorque(_lastTorque);
+        //     return;
+        // }
         
         Vector3 worldUp = Vector3.Up;
         Vector3 playerUp = Player.GlobalTransform.Basis.Y;
@@ -52,14 +43,17 @@ public class Balancing : HumanoidState
         Vector3 tiltLocal = tiltWorld * rootBasis;
         Vector3 angVelLocal = angVelWorld * rootBasis;
 
-        Vector3 controlTorqueLocal = -_kP * (Humanoid.TempInertia * tiltLocal);
-        Vector3 torqueLocal = controlTorqueLocal - _kD * (Humanoid.TempInertia * angVelLocal);
+        Vector3 controlTorqueLocal = -kP * (Player.GetInertia() * tiltLocal);
+        Vector3 torqueLocal = controlTorqueLocal - kD * (Player.GetInertia() * angVelLocal);
 
         Vector3 appliedTorque = rootBasis * torqueLocal;
 
+        // We don't want to add torque counter to our player turning when walking.
+        appliedTorque.Y = 0;
+
         Player.ApplyTorque(appliedTorque);
-        _lastTorque = appliedTorque;
-                    
-        _tick = BalanceRate;
+        // _lastTorque = appliedTorque;
+        //             
+        // _tick = BalanceRate;
     }
 }

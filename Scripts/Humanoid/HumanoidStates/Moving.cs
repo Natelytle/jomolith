@@ -4,7 +4,7 @@ using Jomolith.Scripts.Utils;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Moving(string stateName, Humanoid player, float maxAccel = 741.6f, float kP = 2250f, float kD = 50f)
+public class Moving(string stateName, Humanoid player, float maxAccel, float kP, float kD)
     : Balancing(stateName, player, kP, kD)
 {
     private const float Gain = 150f;
@@ -32,18 +32,9 @@ public class Moving(string stateName, Humanoid player, float maxAccel = 741.6f, 
         float length = Math.Min(maxAccel, Gain * correctionVector.Length());
 
         correctionVector = correctionVector.Normalized() * length;
+
+        Vector3 correctionForce = correctionVector * Player.Mass;
         
-        Player.ApplyCentralForce(correctionVector);
-
-        if (!Player.RotationLocked)
-        {
-            Vector3 playerHeading = Player.GetPlayerHeading();
-            float angle = playerHeading.SignedAngleTo(target, Vector3.Up);
-            float desiredRotationalVelocity = 10.0f * angle;
-
-            float desiredTorque = 175f * Humanoid.TempInertia.Y * (desiredRotationalVelocity - Player.AngularVelocity.Dot(Vector3.Up));
-		
-            Player.ApplyTorque(Vector3.Up * desiredTorque);
-        }
+        Player.ApplyCentralForce(correctionForce);
     }
 }

@@ -19,7 +19,11 @@ size = Vector3(2, 1, 1)
 size = Vector3(2, 1, 1)
 
 [node name="Humanoid" type="RigidBody3D"]
+mass = 9.8
 physics_material_override = SubResource("PhysicsMaterial_syv1w")
+center_of_mass_mode = 1
+center_of_mass = Vector3(0, 1, 0)
+inertia = Vector3(20, 8.6, 31)
 can_sleep = false
 continuous_cd = true
 script = ExtResource("1_syv1w")

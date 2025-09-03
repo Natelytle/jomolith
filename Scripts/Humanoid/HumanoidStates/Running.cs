@@ -4,11 +4,10 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
 public class Running(Humanoid player) 
-    : Moving("Running", player)
+    : RunningBase("Running", player)
 {
     public override void OnEnter()
     {
-        Player.GetPhysicsMaterialOverride().Friction = 0.3f;
     }
 
     public override void OnExit()
@@ -22,18 +21,6 @@ public class Running(Humanoid player)
     public override void PhysicsProcess(double delta)
     {
         base.PhysicsProcess(delta);
-
-        float floorDistance = Player.GetFloorDistance();
-
-        // We are touching the ground if floor distance is the same as our leg length with a bit of margin for error.
-        bool touchingGround = floorDistance < Humanoid.HipHeight + 0.05;
-
-        if (touchingGround)
-        {
-            // Counteract gravity and adjust our legs to the floor.
-            Player.ApplyCentralForce(-Player.GetGravity() * Player.Mass);
-            Player.SetAxisVelocity(Player.PlayerYVector * (Humanoid.HipHeight - floorDistance - 0.01f) * 20);
-        }
         
         // Transition to other states
         if (ComputeEvent(EventType.FacingLadder))

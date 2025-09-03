@@ -4,7 +4,7 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
 public class Coyote(Humanoid player)
-    : Moving("Coyote", player, 143f, kP: 5000f)
+    : FallingBase("Coyote", player)
 {
     private const double CoyoteTime = 0.125d; 
 
@@ -28,25 +28,13 @@ public class Coyote(Humanoid player)
         
         Timer -= delta;
 
-        float floorDistance = Player.GetFloorDistance();
-
-        // We are touching the ground if floor distance is the same as our leg length with a bit of margin for error.
-        // To prevent jumping from snapping to floors, we also make sure we have basically no upwards linear velocity.
-        bool touchingGround = floorDistance < Humanoid.HipHeight + 0.05 && Player.LinearVelocity.Y < 5;
-
-        if (touchingGround)
-        {
-            float impactForce = -Player.LinearVelocity.Y * Player.Mass;
-            Player.ApplyCentralImpulse(Humanoid.WorldYVector * impactForce);
-        }
-
         if (ComputeEvent(EventType.FacingLadder))
         {
             InvokeFinished(this, StateType.Climbing);
         }
         else if (ComputeEvent(EventType.OnFloor))
         {
-            InvokeFinished(this, StateType.Running);
+            InvokeFinished(this, StateType.Landed);
         }
         else if (ComputeEvent(EventType.TimerUp))
         {

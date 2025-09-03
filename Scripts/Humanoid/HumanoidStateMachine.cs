@@ -49,6 +49,7 @@ public partial class HumanoidStateMachine : Node
             case StateType.Jumping:
                 break;
             case StateType.Landed:
+                state = new Landed(Player);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
