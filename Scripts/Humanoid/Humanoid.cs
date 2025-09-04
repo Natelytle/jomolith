@@ -140,7 +140,7 @@ public partial class Humanoid : RigidBody3D
 		if (RotationLocked && _rotationLockTick <= 0)
 		{
 			AxisLockAngularY = true;
-			_rotationLockTick = 2;
+			_rotationLockTick = 8;
 		}
 		else if (AxisLockAngularY)
 			AxisLockAngularY = false;
@@ -159,9 +159,6 @@ public partial class Humanoid : RigidBody3D
 
 		_prevVelocity = LinearVelocity;
 		_prevAngularVelocity = AngularVelocity;
-		
-		if (Position.Y > 3)
-			Console.WriteLine(Position.Y);
 	}
 
 	public Vector3 GetMoveDirection()
