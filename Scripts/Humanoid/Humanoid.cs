@@ -112,6 +112,10 @@ public partial class Humanoid : RigidBody3D
 	
 	// State information
 	private int _rotationLockTick;
+	private Vector3 _externalForce;
+	private Vector3 _externalTorque;
+	private Vector3 _prevVelocity;
+	private Vector3 _prevAngularVelocity;
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -131,6 +135,12 @@ public partial class Humanoid : RigidBody3D
 
 			_rotationLockTick--;
 		}
+
+		_externalForce = Mass * (LinearVelocity - _prevVelocity) / (float)delta;
+		_externalTorque = GetInertia() * (AngularVelocity - _prevAngularVelocity) / (float)delta;
+
+		_prevVelocity = LinearVelocity;
+		_prevAngularVelocity = AngularVelocity;
 	}
 
 	public Vector3 GetMoveDirection()
@@ -207,4 +217,10 @@ public partial class Humanoid : RigidBody3D
 		Plane plane = new(Vector3.Up);
 		return plane.Project(directionVector).Normalized();
 	}
+
+	// One frame behind, forces aren't recorded so we have to integrate this ourselves.
+	public Vector3 GetExternalForce() => _externalForce;
+
+	// Approximation
+	public Vector3 GetExternalTorque() => _externalTorque;
 }

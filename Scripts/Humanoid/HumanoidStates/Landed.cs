@@ -3,7 +3,7 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
 public class Landed(Humanoid player) 
-    : RunningBase("Landed", player, kP: 7500f)
+    : RunningBase("Landed", player, kP: 15000f)
 {
     public override void OnEnter()
     {

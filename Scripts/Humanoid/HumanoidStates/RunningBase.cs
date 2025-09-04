@@ -3,7 +3,7 @@ using Godot;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class RunningBase(string stateName, Humanoid player, float kP = 2250f)
+public class RunningBase(string stateName, Humanoid player, float kP = 5500f)
     : Moving(stateName, player, 741.6f, kP, 50f)
 {
     private const float KAltitudeP = 30000f;
