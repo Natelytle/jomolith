@@ -6,19 +6,6 @@ namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 public class Falling(Humanoid player)
     : FallingBase("Falling", player)
 {
-    public override void OnEnter()
-    {
-        Player.GetPhysicsMaterialOverride().Friction = 0f;
-    }
-
-    public override void OnExit()
-    {
-    }
-
-    public override void Process(double delta)
-    {
-    }
-
     public override void PhysicsProcess(double delta)
     {
         base.PhysicsProcess(delta);

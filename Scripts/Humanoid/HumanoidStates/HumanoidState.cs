@@ -16,13 +16,13 @@ public abstract class HumanoidState(string stateName, Humanoid player)
     public abstract void Process(double delta);
     public abstract void PhysicsProcess(double delta);
 
-    protected void InvokeFinished(HumanoidState state, Scripts.Humanoid.HumanoidStateMachine.StateType stateType)
+    protected void InvokeFinished(HumanoidState state, HumanoidStateMachine.StateType stateType)
     {
         Finished?.Invoke(state, stateType);
     }
 
     public event FinishedEventHandler Finished;
-    public delegate void FinishedEventHandler(HumanoidState state, Scripts.Humanoid.HumanoidStateMachine.StateType stateType);
+    public delegate void FinishedEventHandler(HumanoidState state, HumanoidStateMachine.StateType stateType);
     
     protected enum EventType 
     {
@@ -47,7 +47,7 @@ public abstract class HumanoidState(string stateName, Humanoid player)
             case EventType.Upright: break;
             case EventType.FacingLadder: returnValue = Player.FacingLadder(); break;
             case EventType.AwayLadder: returnValue = !Player.FacingLadder(); break;
-            case EventType.OnFloor: returnValue = Player.GetFloorDistance() < Humanoid.HipHeight && Player.LinearVelocity.Y <= 0; break;
+            case EventType.OnFloor: returnValue = Player.GetFloorDistance() < Humanoid.HipHeight + 1 && Player.LinearVelocity.Y <= 0; break;
             case EventType.OffFloor: returnValue = Player.GetFloorDistance() > Humanoid.HipHeight + 0.05; break;
             case EventType.TimerUp: returnValue = Timer <= 0; break;
             default:

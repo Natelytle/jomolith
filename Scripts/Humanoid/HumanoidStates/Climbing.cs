@@ -9,10 +9,12 @@ public class Climbing(Humanoid player)
 {
     public override void OnEnter()
     {
+        Player.SetClimbingPosition();
     }
 
     public override void OnExit()
     {
+        Player.SetDefaultPosition();
     }
 
     public override void Process(double delta)
@@ -28,6 +30,7 @@ public class Climbing(Humanoid player)
         Vector3 correctionVector = new(-Player.LinearVelocity.X, 0, -Player.LinearVelocity.Z);
         float adjustmentForce = Math.Min(correctionVector.Length() * 50f, 14000f) * Player.Mass;
         Player.ApplyCentralForce(correctionVector.Normalized() * adjustmentForce);
+        Player.AngularVelocity = new Vector3(Player.AngularVelocity.X, 0, Player.AngularVelocity.Z);
 
         float floorDistance = Player.GetFloorDistance();
 

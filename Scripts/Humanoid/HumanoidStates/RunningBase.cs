@@ -6,10 +6,11 @@ namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 public class RunningBase(string stateName, Humanoid player, float kP = 5500f)
     : Moving(stateName, player, 741.6f, kP, 50f)
 {
-    private const float KAltitudeP = 30000f;
-    private const float KAltitudeD = 1100f;
-
-    private float _prevSpeedY;
+    public override void OnEnter()
+    {
+        Player.GetPhysicsMaterialOverride().Friction = 0.3f;
+        Player.GetPhysicsMaterialOverride().Bounce = 0f;
+    }
 
     public override void PhysicsProcess(double delta)
     {
@@ -17,19 +18,15 @@ public class RunningBase(string stateName, Humanoid player, float kP = 5500f)
         
         float floorDistance = Player.GetFloorDistance();
         
-        // Counteract gravity and adjust our legs to the floor.
-        float desiredYAccel = KAltitudeP * (Humanoid.HipHeight - floorDistance) - KAltitudeD * Player.LinearVelocity.Y;
+        float desiredYVelocity = 27 * (Humanoid.HipHeight - floorDistance);
 
-        if (desiredYAccel > 0f)
+        if (desiredYVelocity > 0)
         {
-            float currentAccelY = _prevSpeedY - Player.LinearVelocity.Y;
-            _prevSpeedY = Player.LinearVelocity.Y;
+            Player.ApplyCentralForce(-Player.GetGravity() * Player.Mass);
 
-            float accelDelta = desiredYAccel - currentAccelY;
-
-            float deltaForce = accelDelta * Player.Mass;
-            
-            Player.ApplyCentralForce(Vector3.Up * deltaForce * 0.1f);
+            float desiredForce = 110 * (desiredYVelocity - Player.LinearVelocity.Y) * Player.Mass;
+        
+            Player.ApplyCentralForce(Vector3.Up * desiredForce);
         }
 
         if (!Player.RotationLocked)

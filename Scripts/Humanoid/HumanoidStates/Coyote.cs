@@ -10,8 +10,9 @@ public class Coyote(Humanoid player)
 
     public override void OnEnter()
     {
+        base.OnEnter();
+
         Timer = CoyoteTime;
-        Player.GetPhysicsMaterialOverride().Friction = 0f;
     }
 
     public override void OnExit()

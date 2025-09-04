@@ -17,6 +17,11 @@ sky = SubResource("Sky_ig7tw")
 tonemap_mode = 2
 glow_enabled = true
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bo1nx"]
+albedo_texture = ExtResource("1_jjgbg")
+uv1_offset = Vector3(0, 0.5, 0)
+uv1_triplanar = true
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6bp64"]
 albedo_texture = ExtResource("1_jjgbg")
 uv1_offset = Vector3(0.5, 0, 0)
@@ -28,11 +33,6 @@ uv1_offset = Vector3(0.5, 0.5, 0)
 uv1_triplanar = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_344ge"]
-albedo_texture = ExtResource("1_jjgbg")
-uv1_offset = Vector3(0, 0.5, 0)
-uv1_triplanar = true
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bo1nx"]
 albedo_texture = ExtResource("1_jjgbg")
 uv1_offset = Vector3(0, 0.5, 0)
 uv1_triplanar = true
@@ -69,6 +69,140 @@ transform = Transform3D(0.605697, -0.689093, 0.397848, 2.78059e-08, 0.5, 0.86602
 shadow_enabled = true
 
 [node name="Stage" type="Node3D" parent="."]
+
+[node name="Zetex Obby" type="Node" parent="Stage"]
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55, -0.5, 0)
+use_collision = true
+size = Vector3(2, 1, 2)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D9" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 66, -0.5, 0)
+use_collision = true
+size = Vector3(2, 1, 2)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D19" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, -0.5, -9)
+use_collision = true
+size = Vector3(2, 1, 2)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D21" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55, -0.5, -12)
+use_collision = true
+size = Vector3(2, 1, 2)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D22" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, -0.5, -18)
+use_collision = true
+size = Vector3(2, 1, 2)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D26" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, -0.5, -12)
+use_collision = true
+size = Vector3(2, 1, 2)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 4.5, -1.5)
+use_collision = true
+size = Vector3(12, 11, 1)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D10" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60.5, 4.5, 4)
+use_collision = true
+size = Vector3(1, 11, 6)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D11" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65.5, 4.5, 6.5)
+use_collision = true
+size = Vector3(9, 11, 1)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D12" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70.5, 4.5, -0.5)
+use_collision = true
+size = Vector3(1, 11, 25)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D7" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 64.5, 4.5, -0.5)
+use_collision = true
+size = Vector3(1, 11, 3)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D8" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56.5, 4.5, 0)
+use_collision = true
+size = Vector3(1, 11, 2)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D13" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60.5, 4.5, -2.5)
+use_collision = true
+size = Vector3(1, 11, 1)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D14" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60.5, 4.5, -8.5)
+use_collision = true
+size = Vector3(1, 11, 7)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D16" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.5, 4.5, -11.5)
+use_collision = true
+size = Vector3(3, 11, 1)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D20" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55, 4.5, -10.5)
+use_collision = true
+size = Vector3(2, 11, 1)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D17" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56.5, 4.5, -13.5)
+use_collision = true
+size = Vector3(1, 11, 13)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D18" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 4.5, -16.5)
+use_collision = true
+size = Vector3(6, 11, 1)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D23" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 4.5, -16.5)
+use_collision = true
+size = Vector3(8, 11, 1)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D24" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 66.5, 4.5, -14.5)
+use_collision = true
+size = Vector3(1, 11, 3)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D25" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 64.5, 4.5, -13.5)
+use_collision = true
+size = Vector3(3, 11, 1)
+material = SubResource("StandardMaterial3D_bo1nx")
+
+[node name="CSGBox3D15" type="CSGBox3D" parent="Stage/Zetex Obby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65.5, 4.5, -8.5)
+use_collision = true
+size = Vector3(9, 11, 1)
+material = SubResource("StandardMaterial3D_bo1nx")
 
 [node name="ToTS" type="Node" parent="Stage"]
 
@@ -141,9 +275,9 @@ size = Vector3(100, 1, 100)
 material = SubResource("StandardMaterial3D_bo1nx")
 
 [node name="CSGBox3D3" type="CSGBox3D" parent="Stage/World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 49.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.5, 49.5)
 use_collision = true
-size = Vector3(100, 7, 1)
+size = Vector3(100, 11, 1)
 material = SubResource("StandardMaterial3D_bo1nx")
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="Stage/World"]

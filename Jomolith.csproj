@@ -4,6 +4,10 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="Scenes\" />
     <Folder Include="Scripts\KineticHumanoid\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\KineticHumanoid.cs.uid" />
   </ItemGroup>
 </Project>

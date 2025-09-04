@@ -7,16 +7,9 @@ public class Landed(Humanoid player)
 {
     public override void OnEnter()
     {
-        Player.GetPhysicsMaterialOverride().Friction = 0.3f;
+        base.OnEnter();
+
         Timer = 0.05;
-    }
-
-    public override void OnExit()
-    {
-    }
-
-    public override void Process(double delta)
-    {
     }
 
     public override void PhysicsProcess(double delta)

@@ -6,6 +6,12 @@ namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 public class FallingBase(string stateName, Humanoid player, float kP = 10000f)
     : Moving(stateName, player, 143.0f, kP, 100f)
 {
+    public override void OnEnter()
+    {
+        Player.GetPhysicsMaterialOverride().Friction = 0f;
+        Player.GetPhysicsMaterialOverride().Bounce = 1f;
+    }
+
     public override void PhysicsProcess(double delta)
     {
         base.PhysicsProcess(delta);

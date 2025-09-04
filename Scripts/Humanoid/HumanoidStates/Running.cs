@@ -6,18 +6,6 @@ namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 public class Running(Humanoid player) 
     : RunningBase("Running", player)
 {
-    public override void OnEnter()
-    {
-    }
-
-    public override void OnExit()
-    {
-    }
-
-    public override void Process(double delta)
-    {
-    }
-
     public override void PhysicsProcess(double delta)
     {
         base.PhysicsProcess(delta);

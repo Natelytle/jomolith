@@ -21,6 +21,8 @@ size = Vector3(2, 1, 1)
 size = Vector3(2, 1, 1)
 
 [node name="Humanoid" type="RigidBody3D"]
+collision_layer = 2
+collision_mask = 3
 mass = 9.8
 physics_material_override = SubResource("PhysicsMaterial_syv1w")
 center_of_mass_mode = 1
@@ -47,7 +49,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 mesh = SubResource("BoxMesh_bsi32")
 
 [node name="HumanoidCamera" parent="." node_paths=PackedStringArray("DefaultSubject") instance=ExtResource("2_dmcnu")]
-MouseSensitivity = 0.3
+MouseSensitivity = 0.16
 DefaultSubject = NodePath("..")
 
 [node name="CameraPosition" type="Node3D" parent="."]

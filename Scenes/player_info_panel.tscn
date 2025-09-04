@@ -1,0 +1,141 @@
+[gd_scene load_steps=3 format=3 uid="uid://yiwsp0vjuamb"]
+
+[ext_resource type="Script" uid="uid://ds7wriqbfludv" path="res://Scripts/UI/PlayerInfoPanel.cs" id="1_4lx4u"]
+[ext_resource type="LabelSettings" uid="uid://c1ifih6w132k7" path="res://Assets/new_label_settings.tres" id="2_7b2v0"]
+
+[node name="PlayerInfoPanel" type="Control"]
+custom_minimum_size = Vector2(240, 150)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_4lx4u")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+custom_minimum_size = Vector2(250, 160)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -132.0
+offset_top = -160.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/PanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Frame Time" type="HBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Frame Time"]
+layout_mode = 2
+text = "Frame Time:"
+label_settings = ExtResource("2_7b2v0")
+
+[node name="Value" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Frame Time"]
+layout_mode = 2
+label_settings = ExtResource("2_7b2v0")
+
+[node name="Root Position" type="HBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Root Position"]
+layout_mode = 2
+text = "Root Position:"
+label_settings = ExtResource("2_7b2v0")
+
+[node name="Value" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Root Position"]
+layout_mode = 2
+label_settings = ExtResource("2_7b2v0")
+
+[node name="Root Rotation" type="HBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Root Rotation"]
+layout_mode = 2
+text = "Root Rotation:"
+label_settings = ExtResource("2_7b2v0")
+
+[node name="Value" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Root Rotation"]
+layout_mode = 2
+label_settings = ExtResource("2_7b2v0")
+
+[node name="Root Linear Velocity" type="HBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Root Linear Velocity"]
+layout_mode = 2
+text = "Root Linear Velocity:"
+label_settings = ExtResource("2_7b2v0")
+
+[node name="Value" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Root Linear Velocity"]
+layout_mode = 2
+label_settings = ExtResource("2_7b2v0")
+
+[node name="Root Angular Velocity" type="HBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Root Angular Velocity"]
+layout_mode = 2
+text = "Root Angular Velocity:"
+label_settings = ExtResource("2_7b2v0")
+
+[node name="Value" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Root Angular Velocity"]
+layout_mode = 2
+label_settings = ExtResource("2_7b2v0")
+
+[node name="Camera Rotation" type="HBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Camera Rotation"]
+layout_mode = 2
+text = "Camera Rotation:"
+label_settings = ExtResource("2_7b2v0")
+
+[node name="Value" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Camera Rotation"]
+layout_mode = 2
+label_settings = ExtResource("2_7b2v0")
+
+[node name="Humanoid State" type="HBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Humanoid State"]
+layout_mode = 2
+text = "Humanoid State:"
+label_settings = ExtResource("2_7b2v0")
+
+[node name="Value" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Humanoid State"]
+layout_mode = 2
+label_settings = ExtResource("2_7b2v0")
+
+[node name="Zoom" type="HBoxContainer" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Zoom"]
+layout_mode = 2
+text = "Zoom:"
+label_settings = ExtResource("2_7b2v0")
+
+[node name="Value" type="Label" parent="MarginContainer/PanelContainer/MarginContainer/VBoxContainer/Zoom"]
+layout_mode = 2
+label_settings = ExtResource("2_7b2v0")

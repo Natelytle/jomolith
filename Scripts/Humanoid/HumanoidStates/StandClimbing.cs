@@ -9,10 +9,12 @@ public class StandClimbing(Humanoid player)
 {
     public override void OnEnter()
     {
+        Player.SetClimbingPosition();
     }
 
     public override void OnExit()
     {
+        Player.SetDefaultPosition();
     }
 
     public override void Process(double delta)

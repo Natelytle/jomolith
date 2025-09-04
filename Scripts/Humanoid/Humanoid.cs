@@ -8,12 +8,15 @@ namespace Jomolith.Scripts.Humanoid;
 
 public partial class Humanoid : RigidBody3D
 {
-	private const float GroundCheckerEpsilon = 0.01f;
+	private const float GroundCheckerEpsilon = 0.1f;
 	private const int GroundCheckerCountX = 3;
 	private const int GroundCheckerCountZ = 3;
 
 	// Nodes
-	private BoxShape3D _torsoCollisionBox;
+	private CollisionShape3D _torsoHitbox;
+	private CollisionShape3D _headHitbox;
+	private MeshInstance3D _torsoMesh;
+	private MeshInstance3D _headMesh;
 	private RayCast3D[][] _groundCheckers;
 	private RayCast3D _climbCheckerUp;
 	private RayCast3D _climbCheckerDown;
@@ -28,9 +31,14 @@ public partial class Humanoid : RigidBody3D
 	private const float LadderCheckerGap = 3.5f;
 	private const float MaxLadderHeight = 2.5f;
 	private const float MinLadderGap = 0.05f;
-	private const float HitboxHeight = 3.0f;
 	private const float HitboxWidth = 2.0f;
 	private const float HitboxDepth = 1.0f;
+
+	private Vector3 _torsoDefaultPosition;
+	private Vector3 _headDefaultPosition;
+
+	private Vector3 _torsoClimbingPosition;
+	private Vector3 _headClimbingPosition;
 
 	// Directional info
 	private static Vector3 WorldXVector => Vector3.Right;
@@ -103,11 +111,21 @@ public partial class Humanoid : RigidBody3D
 		AddChild(_stateMachine);
 
 		_camera = (HumanoidCamera)GetNode("HumanoidCamera");
+
+		_torsoHitbox = (CollisionShape3D)GetNode("TorsoHitbox");
+		_headHitbox = (CollisionShape3D)GetNode("HeadHitbox");
+		_torsoMesh = (MeshInstance3D)GetNode("TorsoMesh");
+		_headMesh = (MeshInstance3D)GetNode("HeadMesh");
+
+		_torsoDefaultPosition = _torsoHitbox.Position;
+		_headDefaultPosition = _headHitbox.Position;
+		_torsoClimbingPosition = _torsoDefaultPosition - PlayerZVector * 0.5f;
+		_headClimbingPosition = _headDefaultPosition - PlayerZVector * 0.5f;
 	}
 
 	// Movement info
 	private const float WalkSpeed = 16.0f;
-	private const float JumpPower = 55.0f;
+	private const float JumpPower = 53.0f;
 	private const float MaxSlope = 89.0f;
 	
 	// State information
@@ -141,6 +159,9 @@ public partial class Humanoid : RigidBody3D
 
 		_prevVelocity = LinearVelocity;
 		_prevAngularVelocity = AngularVelocity;
+		
+		if (Position.Y > 3)
+			Console.WriteLine(Position.Y);
 	}
 
 	public Vector3 GetMoveDirection()
@@ -223,4 +244,21 @@ public partial class Humanoid : RigidBody3D
 
 	// Approximation
 	public Vector3 GetExternalTorque() => _externalTorque;
+
+	// These are animated on roblox, should set this up to be a lerp eventually.
+	public void SetClimbingPosition()
+	{
+		_torsoHitbox.Position = _torsoClimbingPosition;
+		_headHitbox.Position = _headClimbingPosition;
+		_torsoMesh.Position = _torsoHitbox.Position;
+		_headMesh.Position = _headHitbox.Position;
+	}
+
+	public void SetDefaultPosition()
+	{
+		_torsoHitbox.Position = _torsoDefaultPosition;
+		_headHitbox.Position = _headDefaultPosition;
+		_torsoMesh.Position = _torsoHitbox.Position;
+		_headMesh.Position = _headHitbox.Position;
+	}
 }

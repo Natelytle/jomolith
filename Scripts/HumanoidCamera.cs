@@ -15,6 +15,7 @@ public partial class HumanoidCamera : Node
 
     [Export] public Node3D DefaultSubject { get; set; }
     private Node3D _subject;
+    private Node3D _cameraPosition;
 
     private bool _firstPerson;
     private bool _shiftLock;
@@ -23,7 +24,6 @@ public partial class HumanoidCamera : Node
     public float Zoom => _currentDistance;
 
     private bool _rightClick;
-
 
     private Node3D _cameraAnchor;
     private SpringArm3D _cameraSpringArm;
@@ -36,6 +36,12 @@ public partial class HumanoidCamera : Node
     {
         if (DefaultSubject is not null)
             _subject = DefaultSubject;
+        
+        // Move the camera to the head of our subject.
+        if (_subject?.FindChild("CameraPosition") != null)
+        {
+            _cameraPosition = (Node3D)_subject.FindChild("CameraPosition");
+        }
 
         _cameraAnchor = (Node3D)GetNode("CameraAnchor");
         _cameraSpringArm = (SpringArm3D)GetNode("CameraAnchor/CameraSpringarm");
@@ -50,9 +56,9 @@ public partial class HumanoidCamera : Node
     public override void _Process(double delta)
     {
         // Move the camera to the head of our subject.
-        if (_subject is not null && _subject.HasNode("CameraPosition"))
+        if (_cameraPosition != null)
         {
-            _cameraAnchor.GlobalPosition = ((Node3D)_subject.GetNode("CameraPosition")).GlobalPosition;
+            _cameraAnchor.GlobalPosition = _cameraPosition.GlobalPosition;
             _cameraAnchor.GlobalPosition += _subject.GlobalBasis.X * _horizontalOffset;
         }
 
