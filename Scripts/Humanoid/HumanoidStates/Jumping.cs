@@ -3,7 +3,7 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Jumping(RigidHumanoid player, StateType priorState) 
+public class Jumping(KineticHumanoid player, StateType priorState) 
     : FallingBase("Jumping", player, priorState)
 {
     private Vector3 _jumpDirection;

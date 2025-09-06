@@ -3,7 +3,7 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Running(RigidHumanoid player, StateType priorState) 
+public class Running(KineticHumanoid player, StateType priorState) 
     : RunningBase("Running", player, priorState)
 {
     public override void PhysicsProcess(double delta)

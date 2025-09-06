@@ -4,12 +4,13 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class FallingBase(string stateName, RigidHumanoid player, StateType priorState, float kP = 10000f)
+public class FallingBase(string stateName, KineticHumanoid player, StateType priorState, float kP = 10000f)
     : Moving(stateName, player, priorState, 143.0f, kP, 100f)
 {
     public override void OnEnter()
     {
-        Player.GetPhysicsMaterialOverride().Friction = 0.3f;
+        Player.Friction = 0.2f;
+        Player.Restitution = 0.5f;
     }
 
     public override void PhysicsProcess(double delta)

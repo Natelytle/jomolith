@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://b7pgrnnnbu20a"]
 
-[ext_resource type="Script" uid="uid://b53vpvpu1v2s4" path="res://Scripts/Humanoid/Humanoid.cs" id="1_syv1w"]
+[ext_resource type="Script" uid="uid://b53vpvpu1v2s4" path="res://Scripts/Humanoid/RigidHumanoid.cs" id="1_syv1w"]
 [ext_resource type="PackedScene" uid="uid://djx5lh17ybohc" path="res://Scenes/humanoid_camera.tscn" id="2_dmcnu"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_syv1w"]

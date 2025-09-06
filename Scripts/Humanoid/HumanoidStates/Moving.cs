@@ -4,7 +4,7 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Moving(string stateName, RigidHumanoid player, StateType priorState, float maxAccel, float kP, float kD)
+public class Moving(string stateName, KineticHumanoid player, StateType priorState, float maxAccel, float kP, float kD)
     : Balancing(stateName, player, priorState, kP, kD)
 {
     private const float Gain = 150f;

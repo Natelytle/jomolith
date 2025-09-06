@@ -7,7 +7,7 @@ using static Jomolith.Scripts.Utils.MathUtils;
 
 namespace Jomolith.Scripts.Humanoid;
 
-public partial class RigidHumanoid : RigidBody3D
+public partial class KineticHumanoid : CharacterRigidBody
 {
 	private const float GroundCheckerEpsilon = 0.1f;
 	private const int GroundCheckerCountX = 3;
@@ -138,6 +138,8 @@ public partial class RigidHumanoid : RigidBody3D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		base._PhysicsProcess(delta);
+
 		if (RotationLocked)
 		{
 			Vector3 currentRotation = Rotation;
@@ -213,15 +215,6 @@ public partial class RigidHumanoid : RigidBody3D
 
 	public float GetWalkSpeed() => WalkSpeed;
 	public float GetJumpPower() => JumpPower;
-
-	public void LadderJump()
-	{
-		Vector3 backwardsVector = -GetPlayerHeading();
-
-		Vector3 directionVector = (WorldYVector + backwardsVector).Normalized();
-
-		SetAxisVelocity(directionVector * JumpPower);
-	}
 
 	public Vector3 GetPlayerHeading()
 	{

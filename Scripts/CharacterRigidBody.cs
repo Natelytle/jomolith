@@ -8,8 +8,11 @@ public partial class CharacterRigidBody : CharacterBody3D
     [Export] public float Restitution = 0.3f; // Bounciness factor
     [Export] public float Friction = 0.5f;
     [Export] public float AngularDamping = 0.98f; // Reduces spinning over time
+    [Export] public Vector3 Inertia = new(0.4f, 0.4f, 0.4f);
 
-    public Vector3 LinearVelocity { get; set; }
+    private static int MaxIterations = 32;
+
+    public Vector3 LinearVelocity => Velocity;
     public Vector3 AngularVelocity { get; set; }
 
     private Vector3 _continuousForce;
@@ -28,43 +31,40 @@ public partial class CharacterRigidBody : CharacterBody3D
         _continuousForce = Vector3.Zero;
         _continuousTorque = Vector3.Zero;
         
-        LinearVelocity += GetGravity() * (float)delta;
-
-        Velocity = LinearVelocity;
+        Velocity += GetGravity() * (float)delta;
 
         Rotate(AngularVelocity.Normalized(), AngularVelocity.Length() * (float)delta);
-        bool collided = MoveAndSlide();
         
-        if (collided)
-        {
-            Vector3 positionAdjustment = Vector3.Zero;
-            Vector3 rotationAdjustment = Vector3.Zero;
+        Vector3 positionAdjustment = Vector3.Zero;
 
-            for (int i = 0; i < GetSlideCollisionCount(); i++)
-            {
-                var collision = GetSlideCollision(i);
-                Vector3 normal = collision.GetNormal();
-                float depth = collision.GetDepth();
-                Vector3 collisionPoint = collision.GetPosition();
-                
-                // First, we move the player out of the wall
-                positionAdjustment += normal * depth;
-                
-                // Calculate collision response
-                HandleCollisionResponse(collision, delta);
-            }
+        for (int i = 0; i < MaxIterations; i++)
+        {
+            var collision = MoveAndCollide(Velocity * (float)delta, testOnly: true);
+
+            if (collision is null || collision.GetCollisionCount() == 0)
+                break;
             
-            // Apply position adjustment if needed
-            if (positionAdjustment.Length() > 0.001f)
-            {
-                GlobalPosition += positionAdjustment * 0.5f; // Reduce to prevent over-correction
-            }
+            Vector3 normal = collision.GetNormal();
+            float depth = collision.GetDepth();
+            Vector3 collisionPoint = collision.GetPosition();
+                
+            // First, we move the player out of the wall
+            positionAdjustment += normal * depth;
+                
+            // Calculate collision response
+            HandleCollisionResponse(collision, delta);
         }
+
+        // Apply position adjustment if needed
+        if (positionAdjustment.Length() > 0.001f)
+        {
+            GlobalPosition += positionAdjustment * 0.5f; // Reduce to prevent over-correction
+        }
+
+        MoveAndCollide(Velocity * (float)delta);
 
         // Apply angular damping
         AngularVelocity *= AngularDamping;
-        
-        LinearVelocity = Velocity;
     }
 
     private void HandleCollisionResponse(KinematicCollision3D collision, double delta)
@@ -77,7 +77,7 @@ public partial class CharacterRigidBody : CharacterBody3D
         Vector3 r = collisionPoint - centerOfMassWorld;
         
         // Velocity at collision point due to linear + angular motion
-        Vector3 velocityAtPoint = LinearVelocity + AngularVelocity.Cross(r);
+        Vector3 velocityAtPoint = Velocity + AngularVelocity.Cross(r);
         
         // Relative velocity along the normal
         float relativeVelocityNormal = velocityAtPoint.Dot(normal);
@@ -90,11 +90,11 @@ public partial class CharacterRigidBody : CharacterBody3D
         
         // Apply impulse to linear velocity
         Vector3 impulse = impulseScalar * normal;
-        LinearVelocity += impulse / Mass;
+        ApplyCentralImpulse(impulse);
         
         // Apply impulse to angular velocity (torque = r × impulse)
         Vector3 torqueImpulse = r.Cross(impulse);
-        AngularVelocity += torqueImpulse / MomentOfInertia;
+        ApplyTorqueImpulse(torqueImpulse);
         
         // Apply friction
         ApplyFriction(collision, impulseScalar);
@@ -118,7 +118,7 @@ public partial class CharacterRigidBody : CharacterBody3D
         Vector3 r = collisionPoint - centerOfMassWorld;
         
         // Get velocity at contact point
-        Vector3 velocityAtPoint = LinearVelocity + AngularVelocity.Cross(r);
+        Vector3 velocityAtPoint = Velocity + AngularVelocity.Cross(r);
         
         // Get tangent velocity (perpendicular to normal)
         Vector3 tangentVelocity = velocityAtPoint - velocityAtPoint.Dot(normal) * normal;
@@ -141,7 +141,7 @@ public partial class CharacterRigidBody : CharacterBody3D
         Vector3 frictionForce = frictionImpulse * tangentDirection;
         
         // Apply friction to velocities
-        LinearVelocity += frictionForce / Mass;
+        Velocity += frictionForce / Mass;
         AngularVelocity += r.Cross(frictionForce) / MomentOfInertia;
     }
 
@@ -167,7 +167,7 @@ public partial class CharacterRigidBody : CharacterBody3D
 
     private void AccumulateForce(Vector3 force, double delta)
     {
-        LinearVelocity += force * (float)delta / Mass;
+        Velocity += force * (float)delta / Mass;
     }
     
     private void AccumulateTorque(Vector3 torque, double delta)
@@ -187,5 +187,21 @@ public partial class CharacterRigidBody : CharacterBody3D
         // Apply torque from the offset
         Vector3 torque = r.Cross(force);
         ApplyTorqueImpulse(torque);
+    }
+
+    public Vector3 GetInertia() => Inertia;
+
+    public void SetLinearVelocity(Vector3 velocity)
+    {
+        Velocity = velocity;
+    }
+
+    public Vector3 GetLinearVelocity() => Velocity;
+
+    public void SetAxisVelocity(Vector3 velocity)
+    {
+        Plane velocityPlane = new(velocity.Normalized());
+        Velocity = velocityPlane.Project(Velocity);
+        Velocity += velocity;
     }
 }

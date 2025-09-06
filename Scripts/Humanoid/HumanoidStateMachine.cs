@@ -10,7 +10,7 @@ public partial class HumanoidStateMachine : Node
     public StateType InitialState { get; set; }
     
     [Export]
-    public RigidHumanoid Player { get; set; }
+    public KineticHumanoid Player { get; set; }
 
     public HumanoidState CurrentState { get; private set; }
     private StateType _currentStateType;

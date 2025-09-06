@@ -3,7 +3,7 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Balancing(string stateName, RigidHumanoid player, StateType oldState, float kP, float kD)
+public class Balancing(string stateName, KineticHumanoid player, StateType oldState, float kP, float kD)
     : HumanoidState(stateName, player, oldState)
 {
     // private int _tick;

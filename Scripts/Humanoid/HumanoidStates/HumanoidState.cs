@@ -5,10 +5,10 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public abstract class HumanoidState(string stateName, RigidHumanoid player, StateType priorState)
+public abstract class HumanoidState(string stateName, KineticHumanoid player, StateType priorState)
 {
     public readonly string StateName = stateName;
-    protected readonly RigidHumanoid Player = player;
+    protected readonly KineticHumanoid Player = player;
 
     protected double Timer { get; set; }
 

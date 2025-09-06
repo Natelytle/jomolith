@@ -4,7 +4,7 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class StandClimbing(RigidHumanoid player, StateType priorState)
+public class StandClimbing(KineticHumanoid player, StateType priorState)
     : Balancing("StandClimbing", player, priorState, 2250f, 50f)
 {
     public override void OnEnter()
@@ -59,7 +59,7 @@ public class StandClimbing(RigidHumanoid player, StateType priorState)
 
         if (target.Length() > 0)
         {
-            velocityVector += RigidHumanoid.WorldYVector * Player.GetWalkSpeed() * 0.7f;
+            velocityVector += KineticHumanoid.WorldYVector * Player.GetWalkSpeed() * 0.7f;
         }
 
         Player.SetLinearVelocity(velocityVector);

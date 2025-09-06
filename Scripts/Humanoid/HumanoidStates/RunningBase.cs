@@ -4,13 +4,13 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class RunningBase(string stateName, RigidHumanoid player, StateType priorState, float kP = 5500f)
+public class RunningBase(string stateName, KineticHumanoid player, StateType priorState, float kP = 5500f)
     : Moving(stateName, player, priorState, 741.6f, kP, 50f)
 {
     public override void OnEnter()
     {
-        Player.GetPhysicsMaterialOverride().Friction = 0.3f;
-        Player.GetPhysicsMaterialOverride().Bounce = 0f;
+        Player.Friction = 0.3f;
+        Player.Restitution = 0f;
     }
 
     public override void PhysicsProcess(double delta)
@@ -19,7 +19,7 @@ public class RunningBase(string stateName, RigidHumanoid player, StateType prior
         
         float floorDistance = Player.GetFloorDistance();
         
-        float desiredYVelocity = 27 * (RigidHumanoid.HipHeight - floorDistance);
+        float desiredYVelocity = 27 * (KineticHumanoid.HipHeight - floorDistance);
 
         if (desiredYVelocity > 0)
         {

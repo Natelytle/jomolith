@@ -16,7 +16,7 @@ public partial class PlayerInfoPanel : Control
 	private Label _zoom;
 
 	[Export] 
-	private Humanoid.RigidHumanoid _player;
+	private Humanoid.KineticHumanoid _player;
 	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()

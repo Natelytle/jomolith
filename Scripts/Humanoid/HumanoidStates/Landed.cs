@@ -2,7 +2,7 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Landed(RigidHumanoid player, StateType priorState) 
+public class Landed(KineticHumanoid player, StateType priorState) 
     : RunningBase("Landed", player, priorState, kP: 15000f)
 {
     public override void OnEnter()

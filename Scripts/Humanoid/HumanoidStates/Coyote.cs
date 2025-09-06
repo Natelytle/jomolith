@@ -3,7 +3,7 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Coyote(RigidHumanoid player, StateType priorState)
+public class Coyote(KineticHumanoid player, StateType priorState)
     : FallingBase("Coyote", player, priorState)
 {
     private const double CoyoteTime = 0.125d; 
