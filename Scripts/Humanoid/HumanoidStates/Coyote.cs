@@ -3,8 +3,8 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Coyote(Humanoid player)
-    : FallingBase("Coyote", player)
+public class Coyote(RigidHumanoid player, StateType priorState)
+    : FallingBase("Coyote", player, priorState)
 {
     private const double CoyoteTime = 0.125d; 
 
@@ -26,8 +26,6 @@ public class Coyote(Humanoid player)
     public override void PhysicsProcess(double delta)
     {
         base.PhysicsProcess(delta);
-        
-        Timer -= delta;
 
         if (ComputeEvent(EventType.FacingLadder))
         {
@@ -35,7 +33,7 @@ public class Coyote(Humanoid player)
         }
         else if (ComputeEvent(EventType.OnFloor))
         {
-            InvokeFinished(this, StateType.Landed);
+            InvokeFinished(this, StateType.Running);
         }
         else if (ComputeEvent(EventType.TimerUp))
         {
@@ -43,8 +41,7 @@ public class Coyote(Humanoid player)
         }
         else if (ComputeEvent(EventType.JumpCommand))
         {
-            Player.Jump();
-            InvokeFinished(this, StateType.Falling);
+            InvokeFinished(this, StateType.Jumping);
         }
     }
 }

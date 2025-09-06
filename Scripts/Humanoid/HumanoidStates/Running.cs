@@ -3,8 +3,8 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Running(Humanoid player) 
-    : RunningBase("Running", player)
+public class Running(RigidHumanoid player, StateType priorState) 
+    : RunningBase("Running", player, priorState)
 {
     public override void PhysicsProcess(double delta)
     {
@@ -17,8 +17,7 @@ public class Running(Humanoid player)
         }
         else if (ComputeEvent(EventType.JumpCommand))
         {
-            Player.Jump();
-            InvokeFinished(this, StateType.Falling);
+            InvokeFinished(this, StateType.Jumping);
         }
         else if (ComputeEvent(EventType.OffFloor))
         {

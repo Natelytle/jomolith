@@ -10,12 +10,14 @@ public partial class HumanoidStateMachine : Node
     public StateType InitialState { get; set; }
     
     [Export]
-    public Humanoid Player { get; set; }
+    public RigidHumanoid Player { get; set; }
 
     public HumanoidState CurrentState { get; private set; }
+    private StateType _currentStateType;
 
     public enum StateType
     {
+        None,
         Running,
         Coyote,
         Falling,
@@ -27,29 +29,30 @@ public partial class HumanoidStateMachine : Node
 
     private HumanoidState GetState(StateType stateType)
     {
-        HumanoidState state = null;
+        HumanoidState state;
         
         switch (stateType)
         {
             case StateType.Running:
-                state = new Running(Player);
+                state = new Running(Player, _currentStateType);
                 break;
             case StateType.Coyote:
-                state = new Coyote(Player);
+                state = new Coyote(Player, _currentStateType);
                 break;
             case StateType.Falling:
-                state = new Falling(Player);
+                state = new Falling(Player, _currentStateType);
                 break;
             case StateType.Climbing:
-                state = new Climbing(Player);
+                state = new Climbing(Player, _currentStateType);
                 break;
             case StateType.StandClimbing:
-                state = new StandClimbing(Player);
+                state = new StandClimbing(Player, _currentStateType);
                 break;
             case StateType.Jumping:
+                state = new Jumping(Player, _currentStateType);
                 break;
             case StateType.Landed:
-                state = new Landed(Player);
+                state = new Landed(Player, _currentStateType);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
@@ -73,6 +76,7 @@ public partial class HumanoidStateMachine : Node
 
     public override void _PhysicsProcess(double delta)
     {
+        CurrentState?.PrePhysicsProcess(delta);
         CurrentState?.PhysicsProcess(delta);
     }
 
@@ -91,5 +95,6 @@ public partial class HumanoidStateMachine : Node
         newState.OnEnter();
 
         CurrentState = newState;
+        _currentStateType = newStateType;
     }
 }

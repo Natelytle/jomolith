@@ -4,8 +4,8 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Climbing(Humanoid player)
-    : Balancing("Climbing", player, 2250f, 50f)
+public class Climbing(RigidHumanoid player, StateType priorState)
+    : Balancing("Climbing", player, priorState, 2250f, 50f)
 {
     public override void OnEnter()
     {
@@ -35,7 +35,7 @@ public class Climbing(Humanoid player)
         float floorDistance = Player.GetFloorDistance();
 
         // We are touching the ground if floor distance is the same as our leg length with a bit of margin for error.
-        bool touchingGround = floorDistance < Humanoid.HipHeight + 0.05;
+        bool touchingGround = floorDistance < RigidHumanoid.HipHeight + 0.05;
         
         Vector3 targetMovementVector = Player.GetMoveDirection();
 
@@ -52,8 +52,7 @@ public class Climbing(Humanoid player)
         }
         else if (ComputeEvent(EventType.JumpCommand))
         {
-            Player.LadderJump();
-            InvokeFinished(this, StateType.Falling);
+            InvokeFinished(this, StateType.Jumping);
         }
     }
 
@@ -67,7 +66,7 @@ public class Climbing(Humanoid player)
 
             bool isClimbDownAngle = angle > float.DegreesToRadians(100f);
 
-            velocityVector += isClimbDownAngle ? Humanoid.WorldYVector * -Player.GetWalkSpeed() * 0.7f : Humanoid.WorldYVector * Player.GetWalkSpeed() * 0.7f;
+            velocityVector += isClimbDownAngle ? RigidHumanoid.WorldYVector * -Player.GetWalkSpeed() * 0.7f : RigidHumanoid.WorldYVector * Player.GetWalkSpeed() * 0.7f;
         }
 		
         Player.SetLinearVelocity(velocityVector);

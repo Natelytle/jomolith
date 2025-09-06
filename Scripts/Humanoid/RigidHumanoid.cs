@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using Jomolith.Scripts.Humanoid.HumanoidStates;
 using static Jomolith.Scripts.Utils.MathUtils;
 
 namespace Jomolith.Scripts.Humanoid;
 
-public partial class Humanoid : RigidBody3D
+public partial class RigidHumanoid : RigidBody3D
 {
 	private const float GroundCheckerEpsilon = 0.1f;
 	private const int GroundCheckerCountX = 3;
@@ -137,14 +138,6 @@ public partial class Humanoid : RigidBody3D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (RotationLocked && _rotationLockTick <= 0)
-		{
-			AxisLockAngularY = true;
-			_rotationLockTick = 8;
-		}
-		else if (AxisLockAngularY)
-			AxisLockAngularY = false;
-
 		if (RotationLocked)
 		{
 			Vector3 currentRotation = Rotation;
@@ -167,6 +160,11 @@ public partial class Humanoid : RigidBody3D
 		Vector3 direction = (WorldBasis.Rotated(Vector3.Up, _camera.Rotation.Y) * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
 
 		return direction;
+	}
+	
+	public bool HasFloor()
+	{
+		return _groundCheckers.Any(groundCheckerX => groundCheckerX.Any(groundCheckerZ => groundCheckerZ.IsColliding()));
 	}
 
 	public float GetFloorDistance() 
@@ -214,11 +212,7 @@ public partial class Humanoid : RigidBody3D
 	}
 
 	public float GetWalkSpeed() => WalkSpeed;
-
-	public void Jump()
-	{
-		SetAxisVelocity(WorldYVector * JumpPower);
-	}
+	public float GetJumpPower() => JumpPower;
 
 	public void LadderJump()
 	{

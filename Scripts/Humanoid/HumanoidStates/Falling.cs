@@ -3,8 +3,8 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Falling(Humanoid player)
-    : FallingBase("Falling", player)
+public class Falling(RigidHumanoid player, StateType priorState)
+    : FallingBase("Falling", player, priorState)
 {
     public override void PhysicsProcess(double delta)
     {

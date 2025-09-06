@@ -1,10 +1,11 @@
 
 using Godot;
+using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class RunningBase(string stateName, Humanoid player, float kP = 5500f)
-    : Moving(stateName, player, 741.6f, kP, 50f)
+public class RunningBase(string stateName, RigidHumanoid player, StateType priorState, float kP = 5500f)
+    : Moving(stateName, player, priorState, 741.6f, kP, 50f)
 {
     public override void OnEnter()
     {
@@ -18,7 +19,7 @@ public class RunningBase(string stateName, Humanoid player, float kP = 5500f)
         
         float floorDistance = Player.GetFloorDistance();
         
-        float desiredYVelocity = 27 * (Humanoid.HipHeight - floorDistance);
+        float desiredYVelocity = 27 * (RigidHumanoid.HipHeight - floorDistance);
 
         if (desiredYVelocity > 0)
         {

@@ -66,7 +66,6 @@ environment = SubResource("Environment_0xm2m")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="Env"]
 transform = Transform3D(0.605697, -0.689093, 0.397848, 2.78059e-08, 0.5, 0.866025, -0.795695, -0.524549, 0.302848, 0, 17.687, 0)
-shadow_enabled = true
 
 [node name="Stage" type="Node3D" parent="."]
 

@@ -49,7 +49,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 mesh = SubResource("BoxMesh_bsi32")
 
 [node name="HumanoidCamera" parent="." node_paths=PackedStringArray("DefaultSubject") instance=ExtResource("2_dmcnu")]
-MouseSensitivity = 0.16
+MouseSensitivity = 0.3
 DefaultSubject = NodePath("..")
 
 [node name="CameraPosition" type="Node3D" parent="."]

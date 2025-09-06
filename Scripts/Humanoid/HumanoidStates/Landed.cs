@@ -2,8 +2,8 @@ using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Landed(Humanoid player) 
-    : RunningBase("Landed", player, kP: 15000f)
+public class Landed(RigidHumanoid player, StateType priorState) 
+    : RunningBase("Landed", player, priorState, kP: 15000f)
 {
     public override void OnEnter()
     {
@@ -15,7 +15,6 @@ public class Landed(Humanoid player)
     public override void PhysicsProcess(double delta)
     {
         base.PhysicsProcess(delta);
-        Timer -= delta;
         
         // Transition to other states
         if (ComputeEvent(EventType.TimerUp))
@@ -24,7 +23,7 @@ public class Landed(Humanoid player)
         }
         // else if (ComputeEvent(EventType.OffFloor))
         // {
-        //     InvokeFinished(this, StateType.Coyote);
+        //     InvokeFinished(this, StateType.Falling);
         // }
     }
 }

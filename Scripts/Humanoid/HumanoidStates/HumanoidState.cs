@@ -1,13 +1,14 @@
 
 using System;
 using Godot;
+using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public abstract class HumanoidState(string stateName, Humanoid player)
+public abstract class HumanoidState(string stateName, RigidHumanoid player, StateType priorState)
 {
     public readonly string StateName = stateName;
-    protected readonly Humanoid Player = player;
+    protected readonly RigidHumanoid Player = player;
 
     protected double Timer { get; set; }
 
@@ -16,13 +17,18 @@ public abstract class HumanoidState(string stateName, Humanoid player)
     public abstract void Process(double delta);
     public abstract void PhysicsProcess(double delta);
 
-    protected void InvokeFinished(HumanoidState state, HumanoidStateMachine.StateType stateType)
+    public void PrePhysicsProcess(double delta)
+    {
+        Timer -= delta;
+    }
+
+    protected void InvokeFinished(HumanoidState state, StateType stateType)
     {
         Finished?.Invoke(state, stateType);
     }
 
     public event FinishedEventHandler Finished;
-    public delegate void FinishedEventHandler(HumanoidState state, HumanoidStateMachine.StateType stateType);
+    public delegate void FinishedEventHandler(HumanoidState state, StateType stateType);
     
     protected enum EventType 
     {
@@ -47,8 +53,8 @@ public abstract class HumanoidState(string stateName, Humanoid player)
             case EventType.Upright: break;
             case EventType.FacingLadder: returnValue = Player.FacingLadder(); break;
             case EventType.AwayLadder: returnValue = !Player.FacingLadder(); break;
-            case EventType.OnFloor: returnValue = Player.GetFloorDistance() < Humanoid.HipHeight + 1 && Player.LinearVelocity.Y <= 0; break;
-            case EventType.OffFloor: returnValue = Player.GetFloorDistance() > Humanoid.HipHeight + 0.05; break;
+            case EventType.OnFloor: returnValue = Player.HasFloor() && Player.LinearVelocity.Y <= 0; break;
+            case EventType.OffFloor: returnValue = !Player.HasFloor(); break;
             case EventType.TimerUp: returnValue = Timer <= 0; break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(eventType), eventType, null);

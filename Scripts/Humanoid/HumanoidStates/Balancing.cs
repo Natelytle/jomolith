@@ -1,14 +1,15 @@
 using Godot;
+using static Jomolith.Scripts.Humanoid.HumanoidStateMachine;
 
 namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 
-public class Balancing(string stateName, Humanoid player, float kP, float kD)
-    : HumanoidState(stateName, player)
+public class Balancing(string stateName, RigidHumanoid player, StateType oldState, float kP, float kD)
+    : HumanoidState(stateName, player, oldState)
 {
-    private int _tick;
+    // private int _tick;
     private Vector3 _lastTorque;
 
-    private const int BalanceRate = 2;
+    // private const int BalanceRate = 2;
 
     public override void OnEnter()
     {
@@ -56,7 +57,7 @@ public class Balancing(string stateName, Humanoid player, float kP, float kD)
         appliedTorque.Y = 0;
 
         Player.ApplyTorque(appliedTorque);
-        // _lastTorque = appliedTorque;
+        _lastTorque = appliedTorque;
         //             
         // _tick = BalanceRate;
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using Godot;
 
@@ -15,7 +16,7 @@ public partial class PlayerInfoPanel : Control
 	private Label _zoom;
 
 	[Export] 
-	private Humanoid.Humanoid _player;
+	private Humanoid.RigidHumanoid _player;
 	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -31,9 +32,9 @@ public partial class PlayerInfoPanel : Control
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
+	public override void _PhysicsProcess(double delta)
 	{
-		_frameTime.SetText(delta.ToString("0.000"));
+		_frameTime.SetText(delta.ToString("0.000000"));
 		_rootPosition.SetText(FormatVectorPosition(_player.GlobalPosition));
 		_rootRotation.SetText(FormatVectorAngle(_player.GlobalRotation));
 		_rootLinearVelocity.SetText(FormatVectorPosition(_player.LinearVelocity));
@@ -45,22 +46,22 @@ public partial class PlayerInfoPanel : Control
 
 	private static string FormatVectorPosition(Vector3 vector)
 	{
-		string x = vector.X.ToString("0.000");
-		string y = vector.Y.ToString("0.000");
-		string z = vector.Z.ToString("0.000");
+		string x = float.Round(vector.X, 3, MidpointRounding.ToZero).ToString("0.000");
+		string y = float.Round(vector.Y, 3, MidpointRounding.ToZero).ToString("0.000");
+		string z = float.Round(vector.Z, 3, MidpointRounding.ToZero).ToString("0.000");
 
-		string final = x + ", " + y + ", " + z;
+		string final = x.PadLeft(7) + ", " + y.PadLeft(7) + ", " + z.PadLeft(7);
 
 		return final;
 	}
 	
 	private static string FormatVectorAngle(Vector3 vector)
 	{
-		string x = float.RadiansToDegrees(vector.X).ToString("0.000");
-		string y = float.RadiansToDegrees(vector.Y).ToString("0.000");
-		string z = float.RadiansToDegrees(vector.Z).ToString("0.000");
+		string x = float.Round(float.RadiansToDegrees(vector.X), 3, MidpointRounding.ToZero).ToString("0.000");
+		string y = float.Round(float.RadiansToDegrees(vector.Y), 3, MidpointRounding.ToZero).ToString("0.000");
+		string z = float.Round(float.RadiansToDegrees(vector.Z), 3, MidpointRounding.ToZero).ToString("0.000");
 
-		string final = x + ", " + y + ", " + z;
+		string final = x.PadLeft(7) + ", " + y.PadLeft(7) + ", " + z.PadLeft(7);
 
 		return final;
 	}

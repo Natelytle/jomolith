@@ -8,6 +8,6 @@
     <Folder Include="Scripts\KineticHumanoid\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Scripts\KineticHumanoid.cs.uid" />
+    <Content Include="Scripts\Humanoid\KineticHumanoid.cs.uid" />
   </ItemGroup>
 </Project>
