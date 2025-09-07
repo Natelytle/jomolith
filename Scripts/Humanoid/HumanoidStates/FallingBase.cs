@@ -9,7 +9,8 @@ public class FallingBase(string stateName, RigidHumanoid player, StateType prior
 {
     public override void OnEnter()
     {
-        Player.GetPhysicsMaterialOverride().Friction = 0.3f;
+        Player.GetPhysicsMaterialOverride().Friction = 0.2f;
+        Player.GetPhysicsMaterialOverride().Bounce = 0.5f;
     }
 
     public override void PhysicsProcess(double delta)

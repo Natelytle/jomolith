@@ -138,6 +138,16 @@ public partial class RigidHumanoid : RigidBody3D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		if (RotationLocked && !AxisLockAngularY && _rotationLockTick <= 0)
+		{
+			AxisLockAngularY = true;
+		}
+		else if (AxisLockAngularY)
+		{
+			AxisLockAngularY = false;
+			_rotationLockTick = 8;
+		}
+
 		if (RotationLocked)
 		{
 			Vector3 currentRotation = Rotation;

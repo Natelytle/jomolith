@@ -1,12 +1,11 @@
 [gd_scene load_steps=8 format=3 uid="uid://b7pgrnnnbu20a"]
 
-[ext_resource type="Script" uid="uid://b53vpvpu1v2s4" path="res://Scripts/Humanoid/Humanoid.cs" id="1_syv1w"]
+[ext_resource type="Script" uid="uid://b53vpvpu1v2s4" path="res://Scripts/Humanoid/RigidHumanoid.cs" id="1_syv1w"]
 [ext_resource type="PackedScene" uid="uid://djx5lh17ybohc" path="res://Scenes/humanoid_camera.tscn" id="2_dmcnu"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_syv1w"]
 friction = 0.3
-bounce = 1.0
-absorbent = true
+bounce = 0.5
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dmcnu"]
 size = Vector3(2, 2, 1)
@@ -49,7 +48,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 mesh = SubResource("BoxMesh_bsi32")
 
 [node name="HumanoidCamera" parent="." node_paths=PackedStringArray("DefaultSubject") instance=ExtResource("2_dmcnu")]
-MouseSensitivity = 0.3
+MouseSensitivity = 0.24
 DefaultSubject = NodePath("..")
 
 [node name="CameraPosition" type="Node3D" parent="."]
