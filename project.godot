@@ -14,7 +14,6 @@ config/name="Jomolith"
 run/main_scene="uid://bdcgss0ixl0sd"
 config/features=PackedStringArray("4.4", "C#", "Mobile")
 run/max_fps=240
-config/icon="res://icon.svg"
 
 [display]
 
