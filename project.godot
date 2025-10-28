@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Jomolith"
-run/main_scene="uid://bdcgss0ixl0sd"
+run/main_scene="uid://ct0o5n5lkbcm6"
 config/features=PackedStringArray("4.4", "C#", "Mobile")
 run/max_fps=240
 
@@ -86,7 +86,5 @@ zoom_out={
 common/physics_ticks_per_second=240
 common/physics_jitter_fix=0.0
 3d/physics_engine="Jolt Physics"
+jolt_physics_3d/limits/max_linear_velocity=1000.0
 3d/default_gravity=196.2
-3d/default_linear_damp=0.0
-3d/default_angular_damp=0.0
-3d/solver/solver_iterations=8

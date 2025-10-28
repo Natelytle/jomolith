@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://cuhifk4yy6h30"]
+
+[ext_resource type="PackedScene" uid="uid://cafoo82qowx8b" path="res://Resources/Player/damian.blend" id="1_kais5"]
+
+[node name="damian" instance=ExtResource("1_kais5")]
+
+[node name="Skeleton3D" parent="." index="0"]
+bones/3/position = Vector3(2.73455e-11, 0.00031294, 0)
+bones/3/rotation = Quaternion(-0.000185055, 0.707107, 0.707107, 0.000185116)
+bones/4/position = Vector3(-1.0041, 0.195099, 0.570265)
+bones/4/rotation = Quaternion(-0.266617, 0.670581, -0.293462, 0.62699)
+bones/5/position = Vector3(1.02148, -0.279861, 0.457835)
+bones/5/rotation = Quaternion(-0.678225, -0.246656, 0.664524, 0.193852)
+bones/6/position = Vector3(-0.988971, -0.0049356, -1.201)
+bones/6/rotation = Quaternion(-0.658926, 0.259304, -0.644654, 0.288097)
+bones/7/position = Vector3(0.985036, -0.032017, -1.11071)
+bones/7/rotation = Quaternion(-0.215139, -0.673325, 0.215488, 0.673731)
+bones/8/rotation = Quaternion(-0.0119808, 0.696261, 0.717583, -0.0122822)
+
+[node name="AnimationPlayer" parent="." index="1"]
+speed_scale = 1.103
