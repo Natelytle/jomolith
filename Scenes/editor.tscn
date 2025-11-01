@@ -1,0 +1,60 @@
+[gd_scene load_steps=8 format=3 uid="uid://bfujipxmxjo2y"]
+
+[ext_resource type="Script" uid="uid://cn4att8ingscd" path="res://Scripts/Editor/EditorCameraController.cs" id="1_24ceq"]
+[ext_resource type="Script" uid="uid://cgsrh05b0vjon" path="res://Scripts/Editor/EditorController.cs" id="2_a7iym"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_24ceq"]
+sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+
+[sub_resource type="Sky" id="Sky_a7iym"]
+sky_material = SubResource("ProceduralSkyMaterial_24ceq")
+
+[sub_resource type="Environment" id="Environment_7wlcy"]
+background_mode = 2
+sky = SubResource("Sky_a7iym")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_24ceq"]
+size = Vector3(100, 1, 100)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_a7iym"]
+size = Vector3(100, 1, 100)
+
+[node name="Node3D" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_7wlcy")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Objects" type="Node3D" parent="."]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Objects/StaticBody3D"]
+mesh = SubResource("BoxMesh_24ceq")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Objects/StaticBody3D"]
+shape = SubResource("BoxShape3D_a7iym")
+
+[node name="EditorController" type="Node3D" parent="."]
+script = ExtResource("2_a7iym")
+
+[node name="EditorUI" type="Control" parent="EditorController"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="EditorViewport" type="SubViewport" parent="EditorController"]
+
+[node name="EditorCameraController" type="Node3D" parent="EditorController"]
+script = ExtResource("1_24ceq")
+
+[node name="Camera3D" type="Camera3D" parent="EditorController/EditorCameraController"]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 2, 0)
