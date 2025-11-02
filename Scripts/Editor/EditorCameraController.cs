@@ -5,12 +5,14 @@ namespace Jomolith.Scripts.Editor;
 
 public partial class EditorCameraController : Node3D
 {
+    [Export] private float Sensitivity { get; set; } = 0.1f;
+
     public event ObjectSelectedHandler? OnObjectSelected;
     public delegate void ObjectSelectedHandler(Node3D? selectedNode);
 
-    private const float MovementSpeed = 20;
-    private const float ShiftSpeed = 40;
-    private const float CtrlSpeed = 5;
+    private float _moveSpeed = 20;
+    private const float MinSpeed = 2;
+    private const float MaxSpeed = 500;
     
     private bool _sendRaycast;
     
@@ -44,46 +46,42 @@ public partial class EditorCameraController : Node3D
             _editorController.IsInFreelookMode = false;
         }
 
-        if (_editorController.IsInFreelookMode)
-            ProcessMovement(delta);
+        ProcessMovement(delta);
     }
 
     private void ProcessMovement(double delta)
     {
-        Vector2 movementVector = Vector2.Zero;
-        float movementSpeed = MovementSpeed;
+        Vector2 movementVector = Input.GetVector("left", "right", "forward", "backward");
 
-        movementVector = Input.GetVector("left", "right", "forward", "backward");
-
-        if (Input.IsActionPressed("shift_lock"))
-        {
-            movementSpeed = ShiftSpeed;
-        }
-        else if (Input.IsKeyPressed(Key.Ctrl))
-        {
-            movementSpeed = CtrlSpeed;
-        }
-
-        GlobalPosition += _camera.GlobalBasis.Z * movementVector.Y * movementSpeed * (float)delta;
-        GlobalPosition += _camera.GlobalBasis.X * movementVector.X * movementSpeed * (float)delta;
+        GlobalPosition += _camera.GlobalBasis.Z * movementVector.Y * _moveSpeed * (float)delta;
+        GlobalPosition += _camera.GlobalBasis.X * movementVector.X * _moveSpeed * (float)delta;
     }
 
     public override void _UnhandledInput(InputEvent e)
-    {
+    { 
         if (_editorController.IsInFreelookMode)
         {
             if (e is InputEventMouseMotion motion)
             {
                 Vector3 cameraRotation = _camera.RotationDegrees;
-                cameraRotation.X = float.Clamp(cameraRotation.X + -motion.Relative.Y, -80, 80);
+                cameraRotation.X = float.Clamp(cameraRotation.X + -motion.Relative.Y * Sensitivity, -80, 80);
                 _camera.RotationDegrees = cameraRotation;
 
-                SetRotationDegrees(new Vector3(RotationDegrees.X, RotationDegrees.Y - motion.Relative.X, RotationDegrees.Z));
+                SetRotationDegrees(new Vector3(RotationDegrees.X, RotationDegrees.Y - motion.Relative.X * Sensitivity, RotationDegrees.Z));
             }
         }
-        else if (e is InputEventMouseButton click)
+
+        if (e is InputEventMouseButton mbEvent)
         {
-            if (click.ButtonIndex == MouseButton.Left && click.Pressed)
+            if (mbEvent.ButtonIndex == MouseButton.WheelUp) {
+                _moveSpeed *= 1.1f;
+                _moveSpeed = float.Min(_moveSpeed, MaxSpeed);
+            } else if (mbEvent.ButtonIndex == MouseButton.WheelDown) {
+                _moveSpeed /= 1.1f;
+                _moveSpeed = float.Max(_moveSpeed, MinSpeed);
+            }
+
+            if (mbEvent.ButtonIndex == MouseButton.Left && mbEvent.Pressed)
             {
                 if (_editorController.CurrentEditorMode == EditorController.EditorMode.Select)
                 {
