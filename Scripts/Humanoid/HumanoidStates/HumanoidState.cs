@@ -39,6 +39,7 @@ public abstract class HumanoidState(string stateName, Humanoid player, StateType
         OnFloor,
         OffFloor,
         TimerUp,
+        IsIdle
     }
 
     protected bool ComputeEvent(EventType eventType)
@@ -55,6 +56,7 @@ public abstract class HumanoidState(string stateName, Humanoid player, StateType
             case EventType.OnFloor: returnValue = Player.FloorPart is not null && Player.LinearVelocity.Y <= 0; break;
             case EventType.OffFloor: returnValue = Player.FloorPart is null; break;
             case EventType.TimerUp: returnValue = Timer <= 0; break;
+            case EventType.IsIdle: returnValue = (Player.LinearVelocity - Player.FloorVelocity ?? Vector3.Zero).Length() < 0.5; break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(eventType), eventType, null);
         }

@@ -5,6 +5,11 @@ namespace Jomolith.Scripts.Humanoid.HumanoidStates;
 public class Falling(Humanoid player, StateType priorState)
     : FallingBase("Falling", player, priorState)
 {
+    public override void OnEnter()
+    {
+        Player.AnimationPlayer.SetCurrentAnimation("Fall");
+    }
+
     public override void PhysicsProcess(double delta)
     {
         base.PhysicsProcess(delta);

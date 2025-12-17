@@ -45,8 +45,8 @@ public partial class Humanoid : RigidBody3D
 	// State Machine
 	[Export]
 	public StateType InitialState { get; set; }
-	
-	public HumanoidState? CurrentState { get; private set; }
+
+	public HumanoidState CurrentState { get; private set; } = null!;
 	private StateType _currentStateType;
 	
 	
@@ -71,7 +71,7 @@ public partial class Humanoid : RigidBody3D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-		CurrentState?.Process(delta);
+		CurrentState.Process(delta);
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -89,8 +89,8 @@ public partial class Humanoid : RigidBody3D
 		_previousVelocity = _currentVelocity;
 		_currentVelocity = LinearVelocity;
 		
-		CurrentState?.PrePhysicsProcess(delta);
-		CurrentState?.PhysicsProcess(delta);
+		CurrentState.PrePhysicsProcess(delta);
+		CurrentState.PhysicsProcess(delta);
 	}
 
 	public override void _IntegrateForces(PhysicsDirectBodyState3D state)
@@ -311,10 +311,11 @@ public partial class Humanoid : RigidBody3D
 		Climbing,
 		StandClimbing,
 		Jumping,
-		Landed
+		Landed,
+		Idle
 	}
 
-	private HumanoidState? GetState(StateType stateType)
+	private HumanoidState GetState(StateType stateType)
 	{
 		HumanoidState state;
         
@@ -341,12 +342,14 @@ public partial class Humanoid : RigidBody3D
 			case StateType.Landed:
 				state = new Landed(this, _currentStateType);
 				break;
+			case StateType.Idle:
+				state = new Idle(this, _currentStateType);
+				break;
 			default:
 				throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
 		}
 
-		if (state != null)
-			state.Finished += OnStateFinished;
+		state.Finished += OnStateFinished;
         
 		return state;
 	}
@@ -356,12 +359,9 @@ public partial class Humanoid : RigidBody3D
 		if (state != CurrentState)
 			return;
 
-		HumanoidState? newState = GetState(newStateType);
+		HumanoidState newState = GetState(newStateType);
 
-		if (newState is null)
-			return;
-
-		CurrentState?.OnExit();
+		CurrentState.OnExit();
 
 		newState.OnEnter();
 
