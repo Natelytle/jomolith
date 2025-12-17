@@ -66,6 +66,8 @@ public partial class Humanoid : RigidBody3D
 		AnimationPlayer = (AnimationPlayer)GetNode("Avatar/AnimationPlayer");
 		
 		CurrentState = GetState(InitialState);
+		
+		AnimationPlayer.SetDefaultBlendTime(0.1);
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
