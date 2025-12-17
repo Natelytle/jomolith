@@ -304,14 +304,16 @@ public partial class Humanoid : RigidBody3D
 
 	private void UpdateHitboxes()
 	{
-		var torsoBoneAttachment = GetNode<BoneAttachment3D>("Hitboxes/Torso");
-		var headBoneAttachment = GetNode<BoneAttachment3D>("Hitboxes/Head");
+		var torsoBoneAttachment = GetNode<CollisionShape3D>("Hitboxes/Torso/Area3D/CollisionShape3D");
+		var headBoneAttachment = GetNode<CollisionShape3D>("Hitboxes/Head/Area3D/CollisionShape3D");
 
 		var torso = GetNode<CollisionShape3D>("CollisionTorso");
 		var head = GetNode<CollisionShape3D>("CollisionHead");
 
-		torso.Position = torsoBoneAttachment.Position;
-		head.Position = headBoneAttachment.Position + new Vector3(0, 0.5f, 0);
+		torso.GlobalPosition = torsoBoneAttachment.GlobalPosition;
+		torso.GlobalBasis = torsoBoneAttachment.GlobalBasis;
+		head.GlobalPosition = headBoneAttachment.GlobalPosition;
+		head.GlobalBasis = headBoneAttachment.GlobalBasis;
 	}
 	
 	public enum StateType

@@ -9,7 +9,7 @@ friction = 0.3
 bounce = 0.5
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_r14t2"]
-size = Vector3(2, 2, 1)
+size = Vector3(2, 1, 2)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hmbta"]
 size = Vector3(2, 1, 1)
@@ -42,6 +42,7 @@ continuous_cd = true
 script = ExtResource("1_hmbta")
 
 [node name="CollisionTorso" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 shape = SubResource("BoxShape3D_r14t2")
 
 [node name="CollisionHead" type="CollisionShape3D" parent="."]
