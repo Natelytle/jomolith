@@ -93,6 +93,9 @@ public partial class Humanoid : RigidBody3D
 		
 		CurrentState.PrePhysicsProcess(delta);
 		CurrentState.PhysicsProcess(delta);
+		
+		// Align our hitboxes to the current animation state
+		UpdateHitboxes();
 	}
 
 	public override void _IntegrateForces(PhysicsDirectBodyState3D state)
@@ -301,7 +304,14 @@ public partial class Humanoid : RigidBody3D
 
 	private void UpdateHitboxes()
 	{
-		
+		var torsoBoneAttachment = GetNode<BoneAttachment3D>("Hitboxes/Torso");
+		var headBoneAttachment = GetNode<BoneAttachment3D>("Hitboxes/Head");
+
+		var torso = GetNode<CollisionShape3D>("CollisionTorso");
+		var head = GetNode<CollisionShape3D>("CollisionHead");
+
+		torso.Position = torsoBoneAttachment.Position;
+		head.Position = headBoneAttachment.Position + new Vector3(0, 0.5f, 0);
 	}
 	
 	public enum StateType
@@ -332,12 +342,12 @@ public partial class Humanoid : RigidBody3D
 			case StateType.Falling:
 				state = new Falling(this, _currentStateType);
 				break;
-			// case StateType.Climbing:
-			// 	state = new Climbing(this, _currentStateType);
-			// 	break;
-			// case StateType.StandClimbing:
-			// 	state = new StandClimbing(this, _currentStateType);
-			// 	break;
+			case StateType.Climbing:
+				state = new Climbing(this, _currentStateType);
+				break;
+			case StateType.StandClimbing:
+				state = new StandClimbing(this, _currentStateType);
+				break;
 			case StateType.Jumping:
 				state = new Jumping(this, _currentStateType);
 				break;
