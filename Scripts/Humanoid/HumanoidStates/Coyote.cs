@@ -29,7 +29,7 @@ public class Coyote(Humanoid player, StateType priorState)
     {
         base.PhysicsProcess(delta);
 
-        if (ComputeEvent(EventType.FacingLadder))
+        if (ComputeEvent(EventType.FacingLadder) && !ComputeEvent(EventType.InFloor))
         {
             InvokeFinished(this, StateType.Climbing);
         }

@@ -23,7 +23,7 @@ public class Running(Humanoid player, StateType priorState)
         Player.AnimationPlayer.SetSpeedScale(horizontalSpeed.Length() / 14.5f);
         
         // Transition to other states
-        if (ComputeEvent(EventType.FacingLadder))
+        if (ComputeEvent(EventType.FacingLadder) && !ComputeEvent(EventType.InFloor))
         {
             InvokeFinished(this, StateType.StandClimbing);
         }

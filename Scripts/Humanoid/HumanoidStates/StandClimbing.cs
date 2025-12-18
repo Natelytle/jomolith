@@ -44,6 +44,10 @@ public class StandClimbing(Humanoid player, StateType priorState)
         {
             InvokeFinished(this, StateType.Running);
         }
+        else if (ComputeEvent(EventType.InFloor))
+        {
+            InvokeFinished(this, StateType.Running);
+        }
         else if (ComputeEvent(EventType.OffFloor))
         {
             InvokeFinished(this, StateType.Climbing);
