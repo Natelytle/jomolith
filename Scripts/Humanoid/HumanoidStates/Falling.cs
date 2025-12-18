@@ -8,6 +8,7 @@ public class Falling(Humanoid player, StateType priorState)
     public override void OnEnter()
     {
         Player.AnimationPlayer.SetCurrentAnimation("Fall");
+        Player.AnimationPlayer.SetSpeedScale(1);
     }
 
     public override void PhysicsProcess(double delta)

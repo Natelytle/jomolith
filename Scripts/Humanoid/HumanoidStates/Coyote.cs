@@ -14,6 +14,7 @@ public class Coyote(Humanoid player, StateType priorState)
         Timer = CoyoteTime;
         
         Player.AnimationPlayer.SetCurrentAnimation("Fall");
+        Player.AnimationPlayer.SetSpeedScale(1);
     }
 
     public override void OnExit()

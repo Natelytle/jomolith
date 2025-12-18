@@ -29,6 +29,7 @@ public class Jumping(Humanoid player, StateType priorState)
         jumpFrames = 0;
         
         Player.AnimationPlayer.PlaySection("Jump", endTime: 0.5);
+        Player.AnimationPlayer.SetSpeedScale(1);
     }
 
     public override void OnExit()
