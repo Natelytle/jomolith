@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
-using static Jomolith.Scripts.Humanoid.Humanoid;
+using static Jomolith.Src.Humanoid.Humanoid;
 
-namespace Jomolith.Scripts.Humanoid.HumanoidStates;
+namespace Jomolith.Src.Humanoid.HumanoidStates;
 
 public class Idle(Humanoid player, StateType priorState) 
     : RunningBase("Idle", player, priorState)

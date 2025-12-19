@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://k8q8whor1c5m"
-path.s3tc="res://.godot/imported/Damjom81_diff.png-a0b217ffd147a8aa2d65b79566ed6407.s3tc.ctex"
+uid="uid://blglw3uf6fwko"
+path.s3tc="res://.godot/imported/Damjom12_diff.png-fccc21c11a4e5072799fdcb1f384fb30.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Resources/Player/Damjom81_diff.png"
-dest_files=["res://.godot/imported/Damjom81_diff.png-a0b217ffd147a8aa2d65b79566ed6407.s3tc.ctex"]
+source_file="res://Resources/Humanoid/Damjom12_diff.png"
+dest_files=["res://.godot/imported/Damjom12_diff.png-fccc21c11a4e5072799fdcb1f384fb30.s3tc.ctex"]
 
 [params]
 

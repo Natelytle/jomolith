@@ -1,7 +1,7 @@
 ﻿using Godot;
-using static Jomolith.Scripts.Humanoid.Humanoid;
+using static Jomolith.Src.Humanoid.Humanoid;
 
-namespace Jomolith.Scripts.Humanoid.HumanoidStates;
+namespace Jomolith.Src.Humanoid.HumanoidStates;
 
 public class Balancing(string stateName, Humanoid player, StateType oldState, float kP, float kD)
     : HumanoidState(stateName, player, oldState)

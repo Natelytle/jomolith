@@ -1,6 +1,6 @@
-﻿using static Jomolith.Scripts.Humanoid.Humanoid;
+﻿using static Jomolith.Src.Humanoid.Humanoid;
 
-namespace Jomolith.Scripts.Humanoid.HumanoidStates;
+namespace Jomolith.Src.Humanoid.HumanoidStates;
 
 public class Landed(Humanoid player, StateType priorState) 
     : RunningBase("Landed", player, priorState, kP: 15000f)

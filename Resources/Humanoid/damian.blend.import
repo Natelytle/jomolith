@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://cgrn7roxalekr"
-path="res://.godot/imported/damian.blend-f42f0a5670936bdb64c309a94b12885c.scn"
+path="res://.godot/imported/damian.blend-441091530b7cb9c666e76b65e82d1acc.scn"
 
 [deps]
 
-source_file="res://Resources/Player/damian.blend"
-dest_files=["res://.godot/imported/damian.blend-f42f0a5670936bdb64c309a94b12885c.scn"]
+source_file="res://Resources/Humanoid/damian.blend"
+dest_files=["res://.godot/imported/damian.blend-441091530b7cb9c666e76b65e82d1acc.scn"]
 
 [params]
 

@@ -1,8 +1,8 @@
 ﻿using System;
 using Godot;
-using static Jomolith.Scripts.Humanoid.Humanoid;
+using static Jomolith.Src.Humanoid.Humanoid;
 
-namespace Jomolith.Scripts.Humanoid.HumanoidStates;
+namespace Jomolith.Src.Humanoid.HumanoidStates;
 
 public class FallingBase(string stateName, Humanoid player, StateType priorState, float kP = 5000f)
     : Balancing(stateName, player, priorState, kP, 100f)

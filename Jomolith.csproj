@@ -6,6 +6,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Scenes\" />
-    <Folder Include="Scripts\Humanoid\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Src\Editor\editor.tscn" />
+    <Content Include="Src\Game\test.tscn" />
+    <Content Include="Src\Humanoid\avatar.tscn" />
+    <Content Include="Src\Humanoid\humanoid.tscn" />
   </ItemGroup>
 </Project>

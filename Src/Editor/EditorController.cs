@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Jomolith.Scripts.Editor;
+namespace Jomolith.Src.Editor;
 
 public partial class EditorController : Node3D
 {

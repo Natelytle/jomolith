@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3 uid="uid://dkil6mfa21wee"]
+
+[ext_resource type="PackedScene" uid="uid://cgrn7roxalekr" path="res://Resources/Humanoid/damian.blend" id="1_t808h"]
+
+[node name="Avatar" instance=ExtResource("1_t808h")]

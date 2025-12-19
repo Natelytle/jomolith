@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Jomolith"
-run/main_scene="uid://ct0o5n5lkbcm6"
+run/main_scene="uid://ceppnatjt4d0"
 config/features=PackedStringArray("4.5", "C#", "Mobile")
 run/max_fps=240
 

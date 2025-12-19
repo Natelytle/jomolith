@@ -1,11 +1,11 @@
 using System;
 using Godot;
-using static Jomolith.Scripts.Humanoid.Humanoid;
+using static Jomolith.Src.Humanoid.Humanoid;
 
-namespace Jomolith.Scripts.Humanoid.HumanoidStates;
+namespace Jomolith.Src.Humanoid.HumanoidStates;
 
-public class StandClimbing(Humanoid player, StateType priorState)
-    : Balancing("StandClimbing", player, priorState, 2250f, 50f)
+public class Climbing(Humanoid player, StateType priorState)
+    : Balancing("Climbing", player, priorState, 2250f, 50f)
 {
     public override void OnEnter()
     {
@@ -31,26 +31,18 @@ public class StandClimbing(Humanoid player, StateType priorState)
         Player.ApplyCentralForce(correctionVector.Normalized() * adjustmentForce);
         Player.AngularVelocity = new Vector3(Player.AngularVelocity.X, 0, Player.AngularVelocity.Z);
 
-        float angle = Player.MoveDirection.AngleTo(Player.Heading);
-        bool isClimbDownAngle = angle > float.DegreesToRadians(100f);
-
-        if (!isClimbDownAngle)
-            Climb(Player.MoveDirection);
+        Climb(Player.MoveDirection);
 
         Player.AnimationPlayer.SetSpeedScale(Player.LinearVelocity.Y / 14.5f);
         
         // Transition to other states
-        if (ComputeEvent(EventType.AwayLadder) || isClimbDownAngle)
+        if (ComputeEvent(EventType.AwayLadder))
         {
-            InvokeFinished(this, StateType.Running);
+            InvokeFinished(this, StateType.Falling);
         }
-        else if (ComputeEvent(EventType.InFloor))
+        else if (ComputeEvent(EventType.OnFloor))
         {
-            InvokeFinished(this, StateType.Running);
-        }
-        else if (ComputeEvent(EventType.OffFloor))
-        {
-            InvokeFinished(this, StateType.Climbing);
+            InvokeFinished(this, StateType.StandClimbing);
         }
         else if (ComputeEvent(EventType.JumpCommand))
         {
@@ -64,9 +56,13 @@ public class StandClimbing(Humanoid player, StateType priorState)
 
         if (target.Length() > 0)
         {
-            velocityVector += Player.GlobalBasis.Y * Player.WalkSpeed * 0.7f;
-        }
+            float angle = target.AngleTo(-Player.Basis.Z);
 
+            bool isClimbDownAngle = angle > float.DegreesToRadians(100f);
+
+            velocityVector += isClimbDownAngle ? Player.GlobalBasis.Y * -Player.WalkSpeed * 0.7f : Player.GlobalBasis.Y * Player.WalkSpeed * 0.7f;
+        }
+		
         Player.SetLinearVelocity(velocityVector);
     }
 }

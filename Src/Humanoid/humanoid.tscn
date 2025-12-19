@@ -1,8 +1,8 @@
 [gd_scene load_steps=13 format=3 uid="uid://bfxdxp2q07i43"]
 
-[ext_resource type="Script" uid="uid://snl42rhevkdv" path="res://Scripts/Humanoid/Humanoid.cs" id="1_hmbta"]
-[ext_resource type="PackedScene" uid="uid://dkil6mfa21wee" path="res://Scenes/avatar.tscn" id="2_hmbta"]
-[ext_resource type="Script" uid="uid://b14yfluwyct30" path="res://Scripts/Humanoid/Camera.cs" id="2_r14t2"]
+[ext_resource type="Script" uid="uid://snl42rhevkdv" path="res://Src/Humanoid/Humanoid.cs" id="1_hmbta"]
+[ext_resource type="PackedScene" uid="uid://dkil6mfa21wee" path="res://Src/Humanoid/avatar.tscn" id="2_hmbta"]
+[ext_resource type="Script" uid="uid://b14yfluwyct30" path="res://Src/Humanoid/Camera.cs" id="2_r14t2"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ntsbj"]
 friction = 0.3
