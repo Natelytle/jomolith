@@ -1,0 +1,43 @@
+[gd_scene load_steps=6 format=3 uid="uid://cgh81gs1uwa8d"]
+
+[ext_resource type="Script" uid="uid://bo10vyltr7vty" path="res://Src/Editor/Gizmos/Subgizmos/TransformSubgizmo.cs" id="1_wep88"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_au3u7"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_wep88"]
+top_radius = 0.05
+bottom_radius = 0.05
+height = 1.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_au3u7"]
+top_radius = 0.0
+bottom_radius = 0.15
+height = 0.5
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_shtbx"]
+
+[node name="TransformSubgizmo" type="Node3D"]
+script = ExtResource("1_wep88")
+
+[node name="SelectionHandle" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, -2)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SelectionHandle"]
+shape = SubResource("CylinderShape3D_au3u7")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SelectionHandle"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+mesh = SubResource("CylinderMesh_wep88")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="SelectionHandle"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+mesh = SubResource("CylinderMesh_au3u7")
+
+[node name="CursorPositionTransformPlane" type="StaticBody3D" parent="."]
+top_level = true
+collision_layer = 2
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CursorPositionTransformPlane"]
+shape = SubResource("WorldBoundaryShape3D_shtbx")
+disabled = true

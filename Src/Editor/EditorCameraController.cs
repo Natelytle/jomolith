@@ -102,7 +102,7 @@ public partial class EditorCameraController : Node3D
             PhysicsDirectSpaceState3D spaceState3D = GetWorld3D().DirectSpaceState;
 
             Vector3 raycastFrom = _camera.ProjectRayOrigin(GetTree().Root.GetMousePosition());
-            Vector3 raycastTo = raycastFrom + _camera.ProjectRayNormal(GetTree().Root.GetMousePosition()) * 100;
+            Vector3 raycastTo = raycastFrom + _camera.ProjectRayNormal(GetTree().Root.GetMousePosition()) * 1000;
             
             PhysicsRayQueryParameters3D query = PhysicsRayQueryParameters3D.Create(raycastFrom, raycastTo, 1);
 
