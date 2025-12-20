@@ -1,6 +1,6 @@
-﻿using static Jomolith.Src.Humanoid.Humanoid;
+﻿using static Jomolith.Humanoid.Humanoid;
 
-namespace Jomolith.Src.Humanoid.HumanoidStates;
+namespace Jomolith.Humanoid.HumanoidStates;
 
 public class Falling(Humanoid player, StateType priorState)
     : FallingBase("Falling", player, priorState)

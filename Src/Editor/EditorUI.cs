@@ -1,8 +1,8 @@
 using System;
 using Godot;
-using static Jomolith.Src.Editor.EditorController;
+using static Jomolith.Editor.EditorController;
 
-namespace Jomolith.Src.Editor;
+namespace Jomolith.Editor;
 
 public partial class EditorUI : Control
 {

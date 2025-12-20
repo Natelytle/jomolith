@@ -1,7 +1,7 @@
 using Godot;
 using Godot.Collections;
 
-namespace Jomolith.Src.Editor;
+namespace Jomolith.Editor;
 
 public partial class EditorCameraController : Node3D
 {

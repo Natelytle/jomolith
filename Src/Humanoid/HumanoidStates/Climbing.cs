@@ -1,8 +1,8 @@
 using System;
 using Godot;
-using static Jomolith.Src.Humanoid.Humanoid;
+using static Jomolith.Humanoid.Humanoid;
 
-namespace Jomolith.Src.Humanoid.HumanoidStates;
+namespace Jomolith.Humanoid.HumanoidStates;
 
 public class Climbing(Humanoid player, StateType priorState)
     : Balancing("Climbing", player, priorState, 2250f, 50f)

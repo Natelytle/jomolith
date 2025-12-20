@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace Jomolith.Src.Humanoid;
+namespace Jomolith.Humanoid;
 
 public partial class Camera : Node3D
 {

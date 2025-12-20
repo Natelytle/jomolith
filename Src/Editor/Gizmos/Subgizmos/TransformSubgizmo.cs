@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Jomolith.Src.Editor.Gizmos.SubGizmos;
+namespace Jomolith.Editor.Gizmos.SubGizmos;
 
 public partial class TransformSubgizmo : Node3D
 {

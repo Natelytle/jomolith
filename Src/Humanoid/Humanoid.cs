@@ -1,8 +1,8 @@
 using System;
 using Godot;
-using Jomolith.Src.Humanoid.HumanoidStates;
+using Jomolith.Humanoid.HumanoidStates;
 
-namespace Jomolith.Src.Humanoid;
+namespace Jomolith.Humanoid;
 
 public partial class Humanoid : RigidBody3D
 {

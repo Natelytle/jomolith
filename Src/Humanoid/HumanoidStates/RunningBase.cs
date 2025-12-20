@@ -1,8 +1,8 @@
 ﻿using System;
 using Godot;
-using static Jomolith.Src.Humanoid.Humanoid;
+using static Jomolith.Humanoid.Humanoid;
 
-namespace Jomolith.Src.Humanoid.HumanoidStates;
+namespace Jomolith.Humanoid.HumanoidStates;
 
 public class RunningBase(string stateName, Humanoid player, StateType priorState, float kP = 7000f)
     : Balancing(stateName, player, priorState, kP, 100f)
