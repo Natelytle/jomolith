@@ -2,7 +2,7 @@ using System;
 using Godot;
 using Jomolith.Utils;
 
-namespace Jomolith.Editor.Gizmos;
+namespace Jomolith.Editor2.Gizmos;
 
 public abstract partial class Gizmo : Node3D
 {

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Godot;
-using Jomolith.Editor.Gizmos;
+using Jomolith.Editor2.Gizmos;
 using Godot.Collections;
 using Jomolith.Utils;
 
-namespace Jomolith.Editor;
+namespace Jomolith.Editor2;
 
 public partial class Editor : Node3D
 {

@@ -1,7 +1,7 @@
 
 using Godot;
 
-namespace Jomolith.Editor;
+namespace Jomolith.Editor2;
 
 public partial class EditorCamera : Node3D
 {

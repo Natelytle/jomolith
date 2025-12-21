@@ -1,9 +1,9 @@
 [gd_scene load_steps=12 format=3 uid="uid://bfujipxmxjo2y"]
 
-[ext_resource type="Script" uid="uid://cn4att8ingscd" path="res://Src/Editor/EditorCamera.cs" id="1_24ceq"]
-[ext_resource type="Script" uid="uid://ccjdocitdt56d" path="res://Src/Editor/Editor.cs" id="1_v0s0a"]
-[ext_resource type="Script" uid="uid://dp17hfrc7qoxn" path="res://Src/Editor/EditorUI.cs" id="2_7wlcy"]
-[ext_resource type="PackedScene" uid="uid://qgyll00n36ml" path="res://Src/Editor/Gizmos/transform_gizmo.tscn" id="4_8c5ax"]
+[ext_resource type="Script" uid="uid://cn4att8ingscd" path="res://Src/Editor2/EditorCamera.cs" id="1_24ceq"]
+[ext_resource type="Script" uid="uid://ccjdocitdt56d" path="res://Src/Editor2/Editor.cs" id="1_v0s0a"]
+[ext_resource type="Script" uid="uid://dp17hfrc7qoxn" path="res://Src/Editor2/EditorUI.cs" id="2_7wlcy"]
+[ext_resource type="PackedScene" uid="uid://qgyll00n36ml" path="res://Src/Editor2/Gizmos/transform_gizmo.tscn" id="4_8c5ax"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_24ceq"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
