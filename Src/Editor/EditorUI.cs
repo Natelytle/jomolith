@@ -1,26 +1,26 @@
-using System;
+
 using Godot;
-using static Jomolith.Editor.EditorController;
+using static Jomolith.Editor.Editor;
 
 namespace Jomolith.Editor;
 
 public partial class EditorUI : Control
 {
-	private EditorController? _editorController;
-
+	[Signal] public delegate void OnModeButtonPressedEventHandler(GizmoMode mode);
+	[Export] private Editor? Editor { get; set; }
+	
 	public override void _Ready()
 	{
-		_editorController = (EditorController)GetParent();
-
-		((Button)GetNode("Panel/VBoxContainer/SelectButton")).Pressed += () => OnModeButtonPressed(EditorMode.Select);
-		((Button)GetNode("Panel/VBoxContainer/MoveButton")).Pressed += () => OnModeButtonPressed(EditorMode.Translate);
-		((Button)GetNode("Panel/VBoxContainer/RotateButton")).Pressed += () => OnModeButtonPressed(EditorMode.Rotate);
-		((Button)GetNode("Panel/VBoxContainer/ScaleButton")).Pressed += () => OnModeButtonPressed(EditorMode.Scale);
+		((Button)GetNode("Panel/VBoxContainer/SelectButton")).Pressed += () => ModeButtonPressed(GizmoMode.Select);
+		((Button)GetNode("Panel/VBoxContainer/MoveButton")).Pressed += () => ModeButtonPressed(GizmoMode.Transform);
+		((Button)GetNode("Panel/VBoxContainer/RotateButton")).Pressed += () => ModeButtonPressed(GizmoMode.Rotate);
+		((Button)GetNode("Panel/VBoxContainer/ScaleButton")).Pressed += () => ModeButtonPressed(GizmoMode.Scale);
 	}
 	
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	private void OnModeButtonPressed(EditorMode mode)
+	private void ModeButtonPressed(GizmoMode mode)
 	{
-		_editorController?.ChangeEditorMode(mode);
+		// int is because you can only emit Variant<> with signals.
+		EmitSignal(SignalName.OnModeButtonPressed, (int)mode);
 	}
 }

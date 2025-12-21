@@ -5,159 +5,137 @@ using Jomolith.Editor.Gizmos.SubGizmos;
 
 namespace Jomolith.Editor.Gizmos;
 
-public partial class TransformGizmo : Node3D
+public partial class TransformGizmo : Gizmo
 {
-    [Export] public Camera3D EditorCamera { get; private set; } = null!;
-    [Export] public Node3D TestObject { get; private set; } = null!;
+    private TransformSubGizmo? _activeSubgizmo;
+    private Vector3 _manipulationOffset;
+    
+    private TransformSubGizmo _posX = null!;
+    private TransformSubGizmo _posY = null!;
+    private TransformSubGizmo _posZ = null!;
+    private TransformSubGizmo _negX = null!;
+    private TransformSubGizmo _negY = null!;
+    private TransformSubGizmo _negZ = null!;
 
-    private Node3D[] _objectsToMove = null!;
-    private Vector3[] _objectOriginalPositions = null!;
-    private Vector3 _objectOffset;
-
-    private TransformSubgizmo? _activeSubgizmo;
-
-    public override void _Ready()
+    public override void SetSubGizmoActive(Node3D clickedNode, Vector3 clickLocation)
     {
-        // x, y, z
-        foreach (var node in GetChildren())
+        // Determine which sub-gizmo was clicked
+        if (_posX.IsAncestorOf(clickedNode) || clickedNode == _posX)
         {
-            if (node is TransformSubgizmo subgizmo)
+            OnSubGizmoClicked(_posX, clickLocation);
+        }
+        else if (_posY.IsAncestorOf(clickedNode) || clickedNode == _posY)
+        {
+            OnSubGizmoClicked(_posY, clickLocation);
+        }
+        else if (_posZ.IsAncestorOf(clickedNode) || clickedNode == _posZ)
+        {
+            OnSubGizmoClicked(_posZ, clickLocation);
+        }
+        else if (_negX.IsAncestorOf(clickedNode) || clickedNode == _negX)
+        {
+            OnSubGizmoClicked(_negX, clickLocation);
+        }
+        else if (_negY.IsAncestorOf(clickedNode) || clickedNode == _negY)
+        {
+            OnSubGizmoClicked(_negY, clickLocation);
+        }
+        else if (_negZ.IsAncestorOf(clickedNode) || clickedNode == _negZ)
+        {
+            OnSubGizmoClicked(_negZ, clickLocation);
+        }
+    }
+
+    protected override void InitializeSubGizmos()
+    {
+        // Cache references
+        _posX = GetNode<TransformSubGizmo>("TransformSubgizmoPosX");
+        _posY = GetNode<TransformSubGizmo>("TransformSubgizmoPosY");
+        _posZ = GetNode<TransformSubGizmo>("TransformSubgizmoPosZ");
+        _negX = GetNode<TransformSubGizmo>("TransformSubgizmoNegX");
+        _negY = GetNode<TransformSubGizmo>("TransformSubgizmoNegY");
+        _negZ = GetNode<TransformSubGizmo>("TransformSubgizmoNegZ");
+    }
+    
+    protected override void ApplyScaleToSubGizmos(Vector3 scale)
+    {
+        _posX.Scale = scale;
+        _posY.Scale = scale;
+        _posZ.Scale = scale;
+        _negX.Scale = scale;
+        _negY.Scale = scale;
+        _negZ.Scale = scale;
+    }
+    
+    protected override void PerformManipulation(double delta)
+    {
+        if (_activeSubgizmo == null) return;
+
+        UpdateCursorPlane(_activeSubgizmo);
+
+        // Raycast to plane
+        if (!GetCursorPlanePosition(out var result))
+            return;
+
+        // Calculate movement
+        Vector3 hitPosition = result["position"].AsVector3();
+        Vector3 localHit = hitPosition - _activeSubgizmo.CursorTransformPlane.GlobalPosition;
+        _manipulationOffset = _activeSubgizmo.MousePlanePositionToUnits(localHit);
+
+        // Apply to all objects
+        for (int i = 0; i < ObjectsToManipulate.Length; i++)
+        {
+            ObjectsToManipulate[i].SetTransform(OriginalObjectTransforms[i] with
             {
-                subgizmo.HandleClicked += BeginTransform;
-            }
+                Origin = OriginalObjectTransforms[i].Origin + _manipulationOffset
+            });
         }
 
-        Node3D[] targets = [TestObject];
-        
-        SetTargets(targets);
+        UpdateGizmoPosition();
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        SetGizmoScales();
+        UpdateGizmoScale();
 
         if (_activeSubgizmo is not null && Input.IsMouseButtonPressed(MouseButton.Left))
         {
-            Vector3 toCamera = (EditorCamera.GlobalPosition - _activeSubgizmo.CursorTransformPlane.GlobalPosition).Normalized();
-            Vector3 projected = toCamera - _activeSubgizmo.MoveAxis * toCamera.Dot(_activeSubgizmo.MoveAxis);
-
-            ((WorldBoundaryShape3D)_activeSubgizmo.CursorTransformCollisionShape.Shape).Plane = new Plane(projected);
-
-            Vector2 mousePos = EditorCamera.GetViewport().GetMousePosition();
-            
-            // Raycast from camera through mouse position
-            Vector3 from = EditorCamera.ProjectRayOrigin(mousePos);
-            Vector3 to = from + EditorCamera.ProjectRayNormal(mousePos) * 1000f;
-
-            PhysicsRayQueryParameters3D query = PhysicsRayQueryParameters3D.Create(from, to, 2);
-            query.CollideWithAreas = false;
-            query.CollideWithBodies = true;
-
-            PhysicsDirectSpaceState3D spaceState = GetWorld3D().DirectSpaceState;
-            Godot.Collections.Dictionary result = spaceState.IntersectRay(query);
-
-            if (result.Count <= 0) 
-                return;
-            
-            Vector3 localHitPosition = result["position"].AsVector3() - result["collider"].As<Node3D>().GlobalPosition;
-
-            _objectOffset = _activeSubgizmo.MousePlanePositionToUnits(localHitPosition);
-
-            for (int i = 0; i < _objectsToMove.Length; i++)
-            {
-                _objectsToMove[i].GlobalPosition = _objectOriginalPositions[i] + _objectOffset;
-            }
-            
-            SetGizmoPositions();
+            PerformManipulation(delta);
         }
         else
         {
-            CommitTransform();
-            _activeSubgizmo = null;
+            EndManipulation();
         }
     }
 
-    public void SetTargets(Node3D[] targets)
-    {
-        _objectsToMove = targets;
-        _objectOriginalPositions = new Vector3[_objectsToMove.Length];
-
-        SetGizmoPositions();
-    }
-
-    private void SetGizmoScales()
-    {
-        Vector3 distance = GlobalPosition - EditorCamera.GlobalPosition;
-        Vector3 sizeMultiplier = Vector3.One * distance.Length() / 15.0f;
-        
-        GetNode<TransformSubgizmo>("TransformSubgizmoPosX").Scale = sizeMultiplier;
-        GetNode<TransformSubgizmo>("TransformSubgizmoPosY").Scale = sizeMultiplier;
-        GetNode<TransformSubgizmo>("TransformSubgizmoPosZ").Scale = sizeMultiplier;
-        GetNode<TransformSubgizmo>("TransformSubgizmoNegX").Scale = sizeMultiplier;
-        GetNode<TransformSubgizmo>("TransformSubgizmoNegY").Scale = sizeMultiplier;
-        GetNode<TransformSubgizmo>("TransformSubgizmoNegZ").Scale = sizeMultiplier;
-    }
-
-    private void SetGizmoPositions()
-    {
-        Aabb boundingBox = GetBoundingBox();
-        
-        GlobalPosition = boundingBox.GetCenter();
-        Vector3 halfSize = boundingBox.Size / 2.0f;
-
-        GetNode<TransformSubgizmo>("TransformSubgizmoPosX").Position = halfSize with { Y = 0, Z = 0 };
-        GetNode<TransformSubgizmo>("TransformSubgizmoPosY").Position = halfSize with { X = 0, Z = 0 };
-        GetNode<TransformSubgizmo>("TransformSubgizmoPosZ").Position = halfSize with { X = 0, Y = 0 };
-        GetNode<TransformSubgizmo>("TransformSubgizmoNegX").Position = -halfSize with { Y = 0, Z = 0 };
-        GetNode<TransformSubgizmo>("TransformSubgizmoNegY").Position = -halfSize with { X = 0, Z = 0 };
-        GetNode<TransformSubgizmo>("TransformSubgizmoNegZ").Position = -halfSize with { X = 0, Y = 0 };
-    }
-
-    private void BeginTransform(TransformSubgizmo subgizmo)
+    private void OnSubGizmoClicked(TransformSubGizmo subgizmo, Vector3 clickLocation)
     {
         _activeSubgizmo = subgizmo;
-        _activeSubgizmo.CursorTransformCollisionShape.SetDisabled(false);
-
-        for (int i = 0; i < _objectsToMove.Length; i++)
-        {
-            _objectOriginalPositions[i] = _objectsToMove[i].GlobalPosition;
-        }
+        _activeSubgizmo.CursorTransformPlane.GlobalPosition = clickLocation;
+        BeginManipulation();
     }
 
-    private void CommitTransform()
+    protected override void OnManipulationBegin()
     {
-        _activeSubgizmo?.CursorTransformCollisionShape.SetDisabled(true);
-        _activeSubgizmo = null;
-
-        for (int i = 0; i < _objectsToMove.Length; i++)
-        {
-            _objectOriginalPositions[i] = _objectsToMove[i].GlobalPosition;
-        }
-
-        _objectOffset = Vector3.Zero;
+        _activeSubgizmo?.CursorTransformCollisionShape.SetDisabled(false);
     }
 
-    private Aabb GetBoundingBox()
+    protected override void OnManipulationEnd()
     {
-        Aabb? boundingBox = null;
-
-        foreach (Node3D obj in _objectsToMove)
+        if (_activeSubgizmo != null)
         {
-            if (obj is CollisionObject3D collisionObject3D)
-            {
-                foreach (Node? child in collisionObject3D.GetChildren())
-                {
-                    if (child is CollisionShape3D shape && shape.Shape is not null)
-                    {
-                        Aabb aabb = shape.GlobalTransform * shape.Shape.GetDebugMesh().GetAabb();
-
-                        boundingBox ??= aabb;
-                        boundingBox = boundingBox.Value.Merge(aabb);
-                    }
-                }
-            }
+            _activeSubgizmo.CursorTransformCollisionShape.SetDisabled(true);
+            _activeSubgizmo = null;
         }
 
-        return boundingBox!.Value;
+        _manipulationOffset = Vector3.Zero;
+    }
+    
+    private void UpdateCursorPlane(TransformSubGizmo subGizmo)
+    {
+        Vector3 toCamera = (EditorCamera.GlobalPosition - subGizmo.CursorTransformPlane.GlobalPosition).Normalized();
+        Vector3 projected = toCamera - subGizmo.MoveAxis * toCamera.Dot(subGizmo.MoveAxis);
+
+        ((WorldBoundaryShape3D)subGizmo.CursorTransformCollisionShape.Shape).Plane = new Plane(projected);
     }
 }

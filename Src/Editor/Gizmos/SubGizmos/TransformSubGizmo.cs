@@ -2,10 +2,13 @@ using Godot;
 
 namespace Jomolith.Editor.Gizmos.SubGizmos;
 
-public partial class TransformSubgizmo : Node3D
+public partial class TransformSubGizmo : Node3D
 {
     [Signal]
-    public delegate void HandleClickedEventHandler(TransformSubgizmo subgizmo);
+    public delegate void HandleClickedEventHandler(TransformSubGizmo subGizmo);
+    
+    [Export]
+    public Color HandleColour { get; private set; }
 
     public StaticBody3D Handle { get; private set; } = null!;
     public CollisionShape3D HandleCollisionShape { get; private set; } = null!;
@@ -25,15 +28,14 @@ public partial class TransformSubgizmo : Node3D
         CursorTransformCollisionShape = GetNode<CollisionShape3D>("CursorPositionTransformPlane/CollisionShape3D");
 
         MoveAxis = -GlobalBasis.Z;
-        Handle.InputEvent += HandleOnInputEvent;
-    }
 
-    private void HandleOnInputEvent(Node camera, InputEvent @event, Vector3 eventposition, Vector3 normal, long shapeidx)
-    {
-        if (@event is InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true })
+        foreach (Node? child in Handle.GetChildren())
         {
-            EmitSignal(SignalName.HandleClicked, this);
-            CursorTransformPlane.GlobalPosition = eventposition;
+            if (child is MeshInstance3D mesh)
+            {
+                StandardMaterial3D material = (StandardMaterial3D)mesh.GetActiveMaterial(0);
+                material.AlbedoColor = HandleColour with { A = 0.8f };
+            }
         }
     }
 

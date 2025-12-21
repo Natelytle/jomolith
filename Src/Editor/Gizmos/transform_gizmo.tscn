@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://qgyll00n36ml"]
 
-[ext_resource type="PackedScene" uid="uid://cgh81gs1uwa8d" path="res://Src/Editor/Gizmos/Subgizmos/transform_subgizmo.tscn" id="1_gghde"]
+[ext_resource type="PackedScene" uid="uid://cgh81gs1uwa8d" path="res://Src/Editor/Gizmos/SubGizmos/transform_subgizmo.tscn" id="1_gghde"]
 [ext_resource type="Script" uid="uid://byolmtq2hnk63" path="res://Src/Editor/Gizmos/TransformGizmo.cs" id="1_os6hw"]
 
 [node name="TransformGizmo" type="Node3D"]
@@ -8,17 +8,23 @@ script = ExtResource("1_os6hw")
 
 [node name="TransformSubgizmoPosX" parent="." instance=ExtResource("1_gghde")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, 0)
+HandleColour = Color(1, 0, 0, 1)
 
 [node name="TransformSubgizmoNegX" parent="." instance=ExtResource("1_gghde")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
+HandleColour = Color(1, 0, 0, 1)
 
 [node name="TransformSubgizmoPosY" parent="." instance=ExtResource("1_gghde")]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+HandleColour = Color(0, 1, 0, 1)
 
 [node name="TransformSubgizmoNegY" parent="." instance=ExtResource("1_gghde")]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
+HandleColour = Color(0, 1, 0, 1)
 
 [node name="TransformSubgizmoPosZ" parent="." instance=ExtResource("1_gghde")]
 transform = Transform3D(1, 0, 0, 0, -1, -8.742278e-08, 0, 8.742278e-08, -1, 0, 0, 0)
+HandleColour = Color(0, 0, 1, 1)
 
 [node name="TransformSubgizmoNegZ" parent="." instance=ExtResource("1_gghde")]
+HandleColour = Color(0, 0, 1, 1)
