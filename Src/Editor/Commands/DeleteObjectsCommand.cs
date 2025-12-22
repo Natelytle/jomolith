@@ -1,7 +1,7 @@
 
 using System.Collections.Generic;
 using Jomolith.Editor.Models;
-using static Jomolith.Editor.Models.SceneModel;
+using Jomolith.Editor.Models.Objects;
 
 namespace Jomolith.Editor.Commands;
 

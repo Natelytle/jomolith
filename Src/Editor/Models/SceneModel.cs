@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using Jomolith.Editor.Models.Objects;
 
 namespace Jomolith.Editor.Models;
 
@@ -17,7 +18,7 @@ public partial class SceneModel : RefCounted
 
     public ObjectModel GetObject(int id) => Objects[id];
 
-    public int CreateObject(string resourcePath, Transform3D transform, Vector3 scale, int? parentId = null)
+    public int CreateObject(Transform3D transform, ObjectType shape, SurfaceData surfaceData, int? parentId = null, string? resourcePath = null)
     {
         if (parentId is not null && !Objects.ContainsKey(parentId.Value))
         {
@@ -28,7 +29,7 @@ public partial class SceneModel : RefCounted
         int id = _nextId;
         _nextId++;
 
-        Objects.Add(id, new ObjectModel(id, parentId, transform, scale, resourcePath));
+        Objects.Add(id, new ObjectModel(id, parentId, transform, shape, surfaceData, resourcePath));
 
         EmitSignal(SignalName.ObjectAdded, id);
 
@@ -105,9 +106,9 @@ public partial class SceneModel : RefCounted
             Id = obj.Id,
             ParentId = obj.ParentId,
             Transform = obj.Transform,
-            Scale = obj.Scale,
+            Shape = obj.Shape,
+            SurfaceData = obj.SurfaceData,
             ResourcePath = obj.ResourcePath,
-            Properties = obj.Properties
         });
 
         foreach (int childId in GetChildren(rootId))
@@ -123,9 +124,9 @@ public partial class SceneModel : RefCounted
             Id = snapshot.Id,
             ParentId = snapshot.ParentId,
             Transform = snapshot.Transform,
-            Scale = snapshot.Scale,
+            Shape = snapshot.Shape,
+            SurfaceData = snapshot.SurfaceData,
             ResourcePath = snapshot.ResourcePath,
-            Properties = snapshot.Properties
         };
         
         Objects.Add(obj.Id, obj);
@@ -134,15 +135,5 @@ public partial class SceneModel : RefCounted
 
         // Ensure next ID is stays further than every existing object
         _nextId = Math.Max(_nextId, obj.Id + 1);
-    }
-        
-    public struct ObjectSnapshot
-    {
-        public int Id;
-        public int? ParentId;
-        public Transform3D Transform;
-        public Vector3 Scale;
-        public string ResourcePath;
-        public Dictionary<string, Variant> Properties;
     }
 }

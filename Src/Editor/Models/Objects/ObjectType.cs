@@ -1,6 +1,11 @@
 namespace Jomolith.Editor.Models.Objects;
 
-public class ObjectType
+public enum ObjectType
 {
-    
+    Block,
+    Cylinder,
+    Sphere,
+    Wedge,
+    CornerWedge,
+    Mesh
 }
