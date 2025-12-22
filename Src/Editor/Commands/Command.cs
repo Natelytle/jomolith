@@ -1,6 +1,6 @@
 namespace Jomolith.Editor.Commands;
 
-public interface Command
+public interface ICommand
 {
     public void Execute();
     public void Undo();

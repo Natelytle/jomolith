@@ -7,12 +7,17 @@ namespace Jomolith.Editor.Models;
 
 public partial class SceneModel : RefCounted
 {
-    public Godot.Collections.Dictionary<int, ObjectModel> Objects { get; private set; } = [];
+    [Signal] public delegate void ObjectAddedEventHandler(int id);
+    [Signal] public delegate void ObjectRemovedEventHandler(int id);
+    [Signal] public delegate void ObjectTransformedEventHandler(int id, Transform3D transform);
+    [Signal] public delegate void ObjectParentChangedEventHandler(int id, int newParentId);
+
+    private Godot.Collections.Dictionary<int, ObjectModel> Objects { get; set; } = [];
     private int _nextId = 1;
 
     public ObjectModel GetObject(int id) => Objects[id];
 
-    public int CreateObject(string resourcePath, Transform3D transform, int? parentId = null)
+    public int CreateObject(string resourcePath, Transform3D transform, Vector3 scale, int? parentId = null)
     {
         if (parentId is not null && !Objects.ContainsKey(parentId.Value))
         {
@@ -23,26 +28,20 @@ public partial class SceneModel : RefCounted
         int id = _nextId;
         _nextId++;
 
-        Objects.Add(id, new ObjectModel(id, parentId, transform, resourcePath));
+        Objects.Add(id, new ObjectModel(id, parentId, transform, scale, resourcePath));
+
+        EmitSignal(SignalName.ObjectAdded, id);
 
         return id;
     }
 
-    public int[] GetChildren(int parentId)
+    public void TranslateObject(int id, Vector3 delta)
     {
-        List<int> children = [];
+        Objects[id].Transform.Origin += delta;
 
-        foreach (int id in Objects.Keys)
-        {
-            if (Objects[id].ParentId == parentId)
-            {
-                children.Add(id);
-            }
-        }
-
-        return children.ToArray();
+        EmitSignal(SignalName.ObjectTransformed, id, Objects[id].Transform);
     }
-
+    
     public void SetParent(int id, int? newParentId)
     {
         if (newParentId is not null && !Objects.ContainsKey(newParentId.Value))
@@ -66,8 +65,10 @@ public partial class SceneModel : RefCounted
         }
 
         Objects[id].ParentId = newParentId;
-    }
 
+        EmitSignal(SignalName.ObjectParentChanged, id, newParentId ?? -1);
+    }
+    
     public void DeleteObjectInternal(int id)
     {
         foreach (int childId in GetChildren(id))
@@ -76,6 +77,23 @@ public partial class SceneModel : RefCounted
         }
 
         Objects.Remove(id);
+
+        EmitSignal(SignalName.ObjectRemoved, id);
+    }
+
+    public int[] GetChildren(int parentId)
+    {
+        List<int> children = [];
+
+        foreach (int id in Objects.Keys)
+        {
+            if (Objects[id].ParentId == parentId)
+            {
+                children.Add(id);
+            }
+        }
+
+        return children.ToArray();
     }
 
     public void CollectSubtreeSnapshots(int rootId, List<ObjectSnapshot> outSnapshots)
@@ -86,9 +104,10 @@ public partial class SceneModel : RefCounted
         {
             Id = obj.Id,
             ParentId = obj.ParentId,
-            Properties = obj.Properties,
+            Transform = obj.Transform,
+            Scale = obj.Scale,
             ResourcePath = obj.ResourcePath,
-            Transform = obj.Transform
+            Properties = obj.Properties
         });
 
         foreach (int childId in GetChildren(rootId))
@@ -99,16 +118,19 @@ public partial class SceneModel : RefCounted
 
     public void RestoreObjectFromSnapshot(ObjectSnapshot snapshot)
     {
-        ObjectModel obj = new ObjectModel
+        ObjectModel obj = new()
         {
             Id = snapshot.Id,
             ParentId = snapshot.ParentId,
             Transform = snapshot.Transform,
+            Scale = snapshot.Scale,
             ResourcePath = snapshot.ResourcePath,
             Properties = snapshot.Properties
         };
         
         Objects.Add(obj.Id, obj);
+
+        EmitSignal(SignalName.ObjectAdded, obj.Id);
 
         // Ensure next ID is stays further than every existing object
         _nextId = Math.Max(_nextId, obj.Id + 1);
@@ -119,6 +141,7 @@ public partial class SceneModel : RefCounted
         public int Id;
         public int? ParentId;
         public Transform3D Transform;
+        public Vector3 Scale;
         public string ResourcePath;
         public Dictionary<string, Variant> Properties;
     }
