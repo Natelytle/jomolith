@@ -4,14 +4,14 @@ using Jomolith.Editor.Models.Objects;
 
 namespace Jomolith.Editor.Commands;
 
-public class CreateObjectCommand(SceneModel scene, Transform3D transform, ObjectType shape, SurfaceData surfaceData, int? parentId, string? resourcePath)
+public class CreateObjectCommand(SceneModel scene, ObjectType shape, Vector3 position, Quaternion rotation, ObjectDimensions dimensions, SurfaceData surfaceData, int? parentId, string? resourcePath)
     : ICommand
 {
     private int? _id;
 
     public void Execute()
     {
-        _id = scene.CreateObject(transform, shape, surfaceData, parentId, resourcePath);
+        _id = scene.CreateObject(shape, position, rotation, dimensions, surfaceData, parentId, resourcePath);
     }
 
     public void Undo()

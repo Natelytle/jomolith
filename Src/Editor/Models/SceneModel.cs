@@ -8,17 +8,24 @@ namespace Jomolith.Editor.Models;
 
 public partial class SceneModel : RefCounted
 {
-    [Signal] public delegate void ObjectAddedEventHandler(int id);
-    [Signal] public delegate void ObjectRemovedEventHandler(int id);
-    [Signal] public delegate void ObjectTransformedEventHandler(int id, Transform3D transform);
-    [Signal] public delegate void ObjectParentChangedEventHandler(int id, int newParentId);
+    public event ObjectAddedEventHandler? ObjectAdded;
+    public delegate void ObjectAddedEventHandler(ObjectModel obj);
+
+    public event ObjectRemovedEventHandler? ObjectRemoved;
+    public delegate void ObjectRemovedEventHandler(int id);
+
+    public event ObjectTransformedEventHandler? ObjectTransformed;
+    public delegate void ObjectTransformedEventHandler(int id, Vector3? newPosition = null, Quaternion? newRotation = null, ObjectDimensions? newDimensions = null);
+
+    public event ObjectParentChangedEventHandler? ObjectParentChanged;
+    public delegate void ObjectParentChangedEventHandler(int id, int? newParentId);
 
     private Godot.Collections.Dictionary<int, ObjectModel> Objects { get; set; } = [];
     private int _nextId = 1;
 
     public ObjectModel GetObject(int id) => Objects[id];
 
-    public int CreateObject(Transform3D transform, ObjectType shape, SurfaceData surfaceData, int? parentId = null, string? resourcePath = null)
+    public int CreateObject(ObjectType shape, Vector3 position, Quaternion rotation, ObjectDimensions dimensions, SurfaceData surfaceData, int? parentId = null, string? resourcePath = null)
     {
         if (parentId is not null && !Objects.ContainsKey(parentId.Value))
         {
@@ -29,18 +36,42 @@ public partial class SceneModel : RefCounted
         int id = _nextId;
         _nextId++;
 
-        Objects.Add(id, new ObjectModel(id, parentId, transform, shape, surfaceData, resourcePath));
+        ObjectModel obj = new(id, parentId, shape, position, rotation, dimensions, surfaceData, resourcePath);
+        Objects.Add(id, obj);
 
-        EmitSignal(SignalName.ObjectAdded, id);
+        ObjectAdded?.Invoke(obj);
 
         return id;
     }
 
     public void TranslateObject(int id, Vector3 delta)
     {
-        Objects[id].Transform.Origin += delta;
+        Objects[id].Position += delta;
 
-        EmitSignal(SignalName.ObjectTransformed, id, Objects[id].Transform);
+        ObjectTransformed?.Invoke(id, newPosition: Objects[id].Position);
+    }
+    
+    public void RotateObject(int id, Quaternion delta)
+    {
+        ObjectModel obj = Objects[id];
+
+        obj.Rotation = (delta * obj.Rotation).Normalized();
+
+        ObjectTransformed?.Invoke(id, newRotation: Objects[id].Rotation);
+    }
+
+    public void ScaleObject(int id, ObjectDimensions delta)
+    {
+        ObjectModel obj = Objects[id];
+
+        obj.Dimensions = new ObjectDimensions
+        {
+            Radius = obj.Dimensions.Radius + delta.Radius,
+            Height = obj.Dimensions.Height + delta.Height,
+            Size = obj.Dimensions.Size + delta.Size
+        };
+        
+        ObjectTransformed?.Invoke(id, newDimensions: Objects[id].Dimensions);
     }
     
     public void SetParent(int id, int? newParentId)
@@ -67,7 +98,7 @@ public partial class SceneModel : RefCounted
 
         Objects[id].ParentId = newParentId;
 
-        EmitSignal(SignalName.ObjectParentChanged, id, newParentId ?? -1);
+        ObjectParentChanged?.Invoke(id, newParentId);
     }
     
     public void DeleteObjectInternal(int id)
@@ -79,7 +110,7 @@ public partial class SceneModel : RefCounted
 
         Objects.Remove(id);
 
-        EmitSignal(SignalName.ObjectRemoved, id);
+        ObjectRemoved?.Invoke(id);
     }
 
     public int[] GetChildren(int parentId)
@@ -105,8 +136,10 @@ public partial class SceneModel : RefCounted
         {
             Id = obj.Id,
             ParentId = obj.ParentId,
-            Transform = obj.Transform,
-            Shape = obj.Shape,
+            Shape = obj.Type,
+            Position = obj.Position,
+            Rotation = obj.Rotation,
+            Dimensions = obj.Dimensions,
             SurfaceData = obj.SurfaceData,
             ResourcePath = obj.ResourcePath,
         });
@@ -123,15 +156,17 @@ public partial class SceneModel : RefCounted
         {
             Id = snapshot.Id,
             ParentId = snapshot.ParentId,
-            Transform = snapshot.Transform,
-            Shape = snapshot.Shape,
+            Type = snapshot.Shape,
+            Position = snapshot.Position,
+            Rotation = snapshot.Rotation,
+            Dimensions = snapshot.Dimensions,
             SurfaceData = snapshot.SurfaceData,
             ResourcePath = snapshot.ResourcePath,
         };
         
         Objects.Add(obj.Id, obj);
 
-        EmitSignal(SignalName.ObjectAdded, obj.Id);
+        ObjectAdded?.Invoke(obj);
 
         // Ensure next ID is stays further than every existing object
         _nextId = Math.Max(_nextId, obj.Id + 1);
