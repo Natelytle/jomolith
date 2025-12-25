@@ -8,6 +8,8 @@ namespace Jomolith.Editor.Models;
 
 public partial class SceneModel : RefCounted
 {
+    #region Signals
+
     public event ObjectAddedEventHandler? ObjectAdded;
     public delegate void ObjectAddedEventHandler(ObjectModel obj);
 
@@ -19,6 +21,8 @@ public partial class SceneModel : RefCounted
 
     public event ObjectParentChangedEventHandler? ObjectParentChanged;
     public delegate void ObjectParentChangedEventHandler(int id, int? newParentId);
+
+    #endregion
 
     private Godot.Collections.Dictionary<int, ObjectModel> Objects { get; set; } = [];
     private int _nextId = 1;

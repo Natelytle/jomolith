@@ -1,26 +1,27 @@
+
+using System.Linq;
 using Godot;
 using Jomolith.Editor.Commands;
-using Jomolith.Editor.Models;
 
 namespace Jomolith.Editor.Controllers;
 
 public partial class DeleteController : RefCounted
 {
-    private EditorState _state = null!;
-    private CommandStack _commandStack = null!;
+    private EditorContext _context = null!;
 
-    public void Setup(EditorState state, CommandStack commandStack)
+    public void Setup(EditorContext context)
     {
-        _state = state;
-        _commandStack = commandStack;
+        _context = context;
     }
 
     public void OnDeletePressed()
     {
-        var ids = _state.Selection.SelectedIds;
-        if (ids.Count == 0) return;
+        var ids = _context.SelectionModel.SelectedIds;
+
+        if (ids.Count == 0)
+            return;
         
-        _commandStack.Execute(new DeleteObjectsCommand(_state.Scene, ids.ToArray()));
-        _state.Selection.Clear();
+        _context.CommandStack.Execute(new DeleteSelectionCommand(_context.SceneModel, _context.SelectionModel, ids.ToArray()));
+        _context.SelectionModel.Clear();
     }
 }

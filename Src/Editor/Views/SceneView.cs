@@ -8,8 +8,8 @@ namespace Jomolith.Editor.Views;
 
 public partial class SceneView : Node3D
 {
-    private Dictionary<int, ViewMesh> _idToObjectsDict = [];
-    private Dictionary<int, PickProxy> _pickProxyToObjectsDict = [];
+    private readonly Dictionary<int, ViewMesh> _idToObjectsDict = [];
+    private readonly Dictionary<int, PickProxy> _pickProxyToObjectsDict = [];
 
     public void ConnectToModel(SceneModel model)
     {
@@ -23,7 +23,7 @@ public partial class SceneView : Node3D
         // Mesh and collision are created separately to allow for future mesh batching.
         ViewMesh viewMesh = CreateViewMesh(obj);
         PickProxy pickProxy = CreatePickProxy(obj);
-        
+
         AddChild(viewMesh);
         AddChild(pickProxy);
         
@@ -74,8 +74,8 @@ public partial class SceneView : Node3D
     {
         ViewMesh viewMesh = new()
         {
-            GlobalPosition = obj.Position,
-            GlobalRotation = obj.Rotation.GetEuler(),
+            Position = obj.Position,
+            Rotation = obj.Rotation.GetEuler(),
             Mesh = GetMesh(obj.Type, obj.Dimensions)
         };
         
@@ -103,8 +103,8 @@ public partial class SceneView : Node3D
     {
         PickProxy pickProxy = new()
         {
-            GlobalPosition = obj.Position,
-            GlobalRotation = obj.Rotation.GetEuler(),
+            Position = obj.Position,
+            Rotation = obj.Rotation.GetEuler(),
             ObjectId = obj.Id
         };
 

@@ -6,13 +6,11 @@ namespace Jomolith.Editor.Controllers;
 
 public partial class MoveController : RefCounted
 {
-    private EditorState _state = null!;
-    private CommandStack _commandStack = null!;
+    private EditorContext _context = null!;
 
-    public void Setup(EditorState state, CommandStack commandStack)
+    public void Setup(EditorContext context)
     {
-        _state = state;
-        _commandStack = commandStack;
+        _context = context;
     }
 
     public void OnDragStart(Vector3 hitPos)

@@ -1,3 +1,4 @@
+using System;
 using Godot;
 using Jomolith.Editor.Commands;
 using Jomolith.Editor.Models;
@@ -6,15 +7,15 @@ namespace Jomolith.Editor.Controllers;
 
 public partial class SelectionController : RefCounted
 {
-    private EditorState _state = null!;
+    private EditorContext _context = null!;
 
-    public void Setup(EditorState state)
+    public void Setup(EditorContext context)
     {
-        _state = state;
+        _context = context;
     }
 
     public void OnClick(int id, bool additive)
     {
-        
+        GD.Print("On Click activated");
     }
 }

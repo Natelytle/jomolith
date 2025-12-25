@@ -1,8 +1,8 @@
 [gd_scene load_steps=8 format=3 uid="uid://jhwlf4wv77qt"]
 
 [ext_resource type="Script" uid="uid://qmrxhwpqj45d" path="res://Src/Editor/EditorMain.cs" id="1_w7bd6"]
-[ext_resource type="Script" uid="uid://coi30x4221gis" path="res://Src/Editor/InputHandler.cs" id="2_aqugj"]
 [ext_resource type="Script" uid="uid://clthukw73hglj" path="res://Src/Editor/Views/SceneView.cs" id="2_ifeus"]
+[ext_resource type="Script" uid="uid://deip0te1w34b2" path="res://Src/Editor/EditorContext.cs" id="2_riwxd"]
 [ext_resource type="Script" uid="uid://bv35x6boomx3k" path="res://Src/Editor/Controllers/CameraController.cs" id="3_riwxd"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_aqugj"]
@@ -18,35 +18,80 @@ sky = SubResource("Sky_riwxd")
 tonemap_mode = 2
 glow_enabled = true
 
-[node name="EditorMain" type="Node"]
+[node name="EditorMain" type="Node" node_paths=PackedStringArray("Context", "Viewport", "SceneView")]
 script = ExtResource("1_w7bd6")
+Context = NodePath("EditorContext")
+Viewport = NodePath("MainUI/VBoxContainer/ContentArea/HSplitContainer/SubViewportContainer/SubViewport")
+SceneView = NodePath("MainUI/VBoxContainer/ContentArea/HSplitContainer/SubViewportContainer/SubViewport/SceneView")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_s6et1")
+[node name="EditorContext" type="Node" parent="." node_paths=PackedStringArray("EditorViewport")]
+script = ExtResource("2_riwxd")
+EditorViewport = NodePath("../MainUI/VBoxContainer/ContentArea/HSplitContainer/SubViewportContainer")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="MainUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainUI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Toolbar" type="HBoxContainer" parent="MainUI/VBoxContainer"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+
+[node name="ContentArea" type="HSplitContainer" parent="MainUI/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 0
+dragger_visibility = 1
+
+[node name="LeftSideBar" type="VSplitContainer" parent="MainUI/VBoxContainer/ContentArea"]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+
+[node name="Tree" type="Tree" parent="MainUI/VBoxContainer/ContentArea/LeftSideBar"]
+layout_mode = 2
+
+[node name="HSplitContainer" type="HSplitContainer" parent="MainUI/VBoxContainer/ContentArea"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+dragger_visibility = 1
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="MainUI/VBoxContainer/ContentArea/HSplitContainer"]
+custom_minimum_size = Vector2(500, 500)
+layout_mode = 2
+size_flags_horizontal = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="MainUI/VBoxContainer/ContentArea/HSplitContainer/SubViewportContainer"]
+handle_input_locally = false
+size = Vector2i(636, 544)
+render_target_update_mode = 4
+
+[node name="SceneView" type="Node3D" parent="MainUI/VBoxContainer/ContentArea/HSplitContainer/SubViewportContainer/SubViewport"]
+script = ExtResource("2_ifeus")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="MainUI/VBoxContainer/ContentArea/HSplitContainer/SubViewportContainer/SubViewport"]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
 shadow_enabled = true
 directional_shadow_max_distance = 1.0
 
-[node name="CameraController" type="Node3D" parent="." node_paths=PackedStringArray("_camera")]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="MainUI/VBoxContainer/ContentArea/HSplitContainer/SubViewportContainer/SubViewport"]
+environment = SubResource("Environment_s6et1")
+
+[node name="Camera3D" type="Camera3D" parent="MainUI/VBoxContainer/ContentArea/HSplitContainer/SubViewportContainer/SubViewport"]
 script = ExtResource("3_riwxd")
-_sensitivity = 0.1
-_camera = NodePath("Camera3D")
 
-[node name="Camera3D" type="Camera3D" parent="CameraController"]
-
-[node name="InputHandler" type="Node" parent="." node_paths=PackedStringArray("_camera")]
-script = ExtResource("2_aqugj")
-_camera = NodePath("../CameraController/Camera3D")
-
-[node name="Views" type="Node" parent="."]
-
-[node name="SceneView" type="Node3D" parent="Views"]
-script = ExtResource("2_ifeus")
-
-[node name="UIOverlay" type="Control" parent="Views"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="Panel" type="Panel" parent="MainUI/VBoxContainer/ContentArea/HSplitContainer"]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
