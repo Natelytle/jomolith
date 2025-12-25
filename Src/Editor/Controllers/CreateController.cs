@@ -15,7 +15,12 @@ public partial class CreateController : RefCounted
 
     public void OnCreatePressed()
     {
-        _context.CommandStack.Execute(new CreateObjectCommand(_context.SceneModel, ObjectType.Block, new Vector3(GD.Randf() * 10, GD.Randf() * 10, GD.Randf() * 10), Quaternion.Identity, new ObjectDimensions { Size = Vector3.One }, new SurfaceData(), null, null));
+        Vector3 randomPosition = new(GD.Randf() * 10, GD.Randf() * 10, GD.Randf() * 10);
+        Quaternion randomRotation = Quaternion.FromEuler(new Vector3(GD.Randf() * 2 * Mathf.Pi, GD.Randf() * 2 * Mathf.Pi, GD.Randf() * 2 * Mathf.Pi));
+        Vector3 randomScale = new(GD.Randf() * 3, GD.Randf() * 3, GD.Randf() * 3);
+        SurfaceType surfaceType = (SurfaceType)(GD.Randi() % 2);
+        
+        _context.CommandStack.Execute(new CreateObjectCommand(_context.SceneModel, ObjectType.Block, randomPosition, randomRotation, new ObjectDimensions { Size = randomScale }, new SurfaceData { SurfaceVariant = surfaceType }, null, null));
         _context.SelectionModel.Clear();
     }
 }

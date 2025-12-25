@@ -6,4 +6,5 @@ namespace Jomolith.Editor.Views;
 public partial class ViewMesh : MeshInstance3D
 {
     public ObjectType Type;
+    public SurfaceData SurfaceData;
 }

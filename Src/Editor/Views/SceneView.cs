@@ -62,7 +62,7 @@ public partial class SceneView : Node3D
 
         if (dimensions is not null)
         {
-            mesh.Mesh = GetMesh(mesh.Type, dimensions.Value);
+            mesh.Mesh = GetMesh(mesh.Type, dimensions.Value, mesh.SurfaceData);
             pickProxy.Collider.Shape = GetShape3D(mesh.Type, dimensions.Value);
         }
 
@@ -76,15 +76,16 @@ public partial class SceneView : Node3D
         {
             Position = obj.Position,
             Rotation = obj.Rotation.GetEuler(),
-            Mesh = GetMesh(obj.Type, obj.Dimensions)
+            Mesh = GetMesh(obj.Type, obj.Dimensions, obj.SurfaceData)
         };
         
         viewMesh.Type = ObjectType.Block;
+        viewMesh.SurfaceData = obj.SurfaceData;
 
         return viewMesh;
     }
 
-    private Mesh GetMesh(ObjectType type, ObjectDimensions dimensions)
+    private Mesh GetMesh(ObjectType type, ObjectDimensions dimensions, SurfaceData surface)
     {
         Mesh? mesh = null;
 
@@ -92,11 +93,26 @@ public partial class SceneView : Node3D
         {
             mesh = new BoxMesh
             {
-                Size = dimensions.Size
+                Size = dimensions.Size,
             };
+            
+            mesh.SurfaceSetMaterial(0, GetMaterial(surface, dimensions.Size));
         }
 
         return mesh ?? new Mesh();
+    }
+
+    private Material? GetMaterial(SurfaceData data, Vector3 size)
+    {
+        ShaderMaterial? material = null;
+
+        if (data.SurfaceVariant == SurfaceType.Stud)
+        {
+            material = (ShaderMaterial)ResourceLoader.Load("res://Resources/Materials/Stud.tres").Duplicate();
+            material.SetShaderParameter("object_size", size);
+        }
+
+        return material;
     }
 
     private PickProxy CreatePickProxy(ObjectModel obj)

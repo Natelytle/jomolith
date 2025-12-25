@@ -1,6 +1,7 @@
 namespace Jomolith.Editor.Models.Objects;
 
-public struct SurfaceType
+public enum SurfaceType
 {
-    
+    None,
+    Stud,
 }
